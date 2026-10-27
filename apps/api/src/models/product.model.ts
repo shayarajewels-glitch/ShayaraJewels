@@ -1,5 +1,6 @@
 import { Schema, model, type HydratedDocument, type Types } from 'mongoose';
 import { FINISHES, PRODUCT_STATUSES, PRODUCT_TYPES, type Finish, type ProductStatus, type ProductType } from '@shayara/shared';
+import { notifyCatalogueChanged } from '../lib/storefront-cache';
 
 export interface ProductImage {
   url: string;
@@ -114,6 +115,9 @@ productSchema.index(
   { name: 'text', searchKeywords: 'text', type: 'text', finish: 'text', description: 'text' },
   { weights: { name: 10, searchKeywords: 6, type: 4, finish: 4, description: 1 }, name: 'product_text', default_language: 'english' },
 );
+
+// Any write to a product (price, stock, status, ratings, sales) invalidates storefront caches.
+productSchema.post(['save', 'updateOne', 'updateMany', 'findOneAndUpdate', 'deleteOne', 'findOneAndDelete'], () => notifyCatalogueChanged());
 
 export type ProductDocument = HydratedDocument<Product>;
 export const ProductModel = model<Product>('Product', productSchema);

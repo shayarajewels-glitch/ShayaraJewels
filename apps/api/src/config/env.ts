@@ -63,6 +63,10 @@ const envSchema = z.object({
   SMTP_PASS: optionalString,
 
   JOBS_ENABLED: booleanString(true),
+
+  /** Shared secret for the storefront's on-demand cache revalidation endpoint. Optional. */
+  REVALIDATE_SECRET: z.preprocess(emptyToUndefined, z.string().min(24, 'REVALIDATE_SECRET must be at least 24 characters').optional()),
+  WEB_REVALIDATE_URL: z.preprocess(emptyToUndefined, z.url().optional()),
 });
 
 export type Env = z.output<typeof envSchema>;
@@ -107,6 +111,7 @@ export interface AppConfig {
     smtp?: { host: string; port: number; secure: boolean; user?: string; pass?: string };
   };
   jobsEnabled: boolean;
+  storefrontRevalidate?: { url: string; secret: string };
 }
 
 export class ConfigError extends Error {
@@ -203,6 +208,9 @@ export function loadConfig(source: NodeJS.ProcessEnv = process.env): AppConfig {
         : undefined,
     },
     jobsEnabled: e.JOBS_ENABLED,
+    storefrontRevalidate: e.REVALIDATE_SECRET
+      ? { url: e.WEB_REVALIDATE_URL ?? `${e.FRONTEND_URL.replace(/\/$/, '')}/api/revalidate`, secret: e.REVALIDATE_SECRET }
+      : undefined,
   });
 }
 

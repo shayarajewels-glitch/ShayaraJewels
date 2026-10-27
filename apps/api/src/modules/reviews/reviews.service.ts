@@ -49,6 +49,8 @@ export async function recomputeProductRating(productId: Types.ObjectId): Promise
 
 export async function listApprovedReviews(productId: string, page: number, limit: number, sort: 'recent' | 'highest' | 'lowest') {
   const pid = new Types.ObjectId(productId);
+  // Reviews are public only for products that are publicly visible.
+  if (!(await ProductModel.exists({ _id: pid, status: 'published' }))) throw notFound('Product not found');
   const filter = { productId: pid, status: 'approved' as const };
   const order: Record<string, 1 | -1> =
     sort === 'highest' ? { rating: -1, createdAt: -1 } : sort === 'lowest' ? { rating: 1, createdAt: -1 } : { createdAt: -1 };

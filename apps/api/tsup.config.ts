@@ -1,7 +1,7 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
-  entry: ['src/server.ts', 'scripts/create-admin.ts', 'scripts/seed.ts'],
+  entry: { server: 'src/server.ts', 'scripts/create-admin': 'scripts/create-admin.ts', 'scripts/seed': 'scripts/seed.ts' },
   format: ['esm'],
   platform: 'node',
   target: 'node22',

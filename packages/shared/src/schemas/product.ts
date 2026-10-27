@@ -45,6 +45,16 @@ export const productVideoSchema = z.strictObject({
 });
 export type ProductVideoInput = z.infer<typeof productVideoSchema>;
 
+/** Optional free text: an empty string clears the field (stored as null). */
+const optionalText = (max: number) =>
+  z
+    .string()
+    .trim()
+    .max(max)
+    .nullable()
+    .optional()
+    .transform((v) => (v === '' ? null : v));
+
 const productFields = {
   name: z.string().trim().min(3, 'Name is too short').max(120),
   slug: slugSchema,
@@ -56,9 +66,9 @@ const productFields = {
   description: z.string().trim().min(20, 'Write at least 20 characters').max(5000),
   type: z.enum(PRODUCT_TYPES),
   finish: z.enum(FINISHES),
-  baseMaterial: z.string().trim().max(80).optional(),
+  baseMaterial: optionalText(80),
   sizeOptions: z.array(z.string().trim().min(1).max(30)).max(20),
-  careInstructions: z.string().trim().max(1000).optional(),
+  careInstructions: optionalText(1000),
   pricePaise: paiseSchema.min(100, 'Price must be at least ₹1'),
   compareAtPricePaise: paiseSchema.nullable().optional(),
   stock: z.number().int().min(0).max(100_000),
@@ -67,8 +77,8 @@ const productFields = {
   status: z.enum(PRODUCT_STATUSES),
   featured: z.boolean(),
   searchKeywords: z.array(z.string().trim().min(1).max(40)).max(20),
-  seoTitle: z.string().trim().max(70).optional(),
-  seoDescription: z.string().trim().max(170).optional(),
+  seoTitle: optionalText(70),
+  seoDescription: optionalText(170),
 };
 
 const compareAtRule = <T extends { pricePaise?: number; compareAtPricePaise?: number | null }>(v: T) =>
