@@ -132,7 +132,7 @@ export function Header() {
           </nav>
         </div>
 
-        <Logo />
+        <Logo responsive />
 
         <div className="flex items-center justify-end gap-0.5 sm:gap-1">
           <button type="button" onClick={() => setSearchOpen((v) => !v)} className="rounded-sm p-2 hover:bg-ivory-deep" aria-label="Search" aria-expanded={searchOpen}>

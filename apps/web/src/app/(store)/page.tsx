@@ -32,6 +32,7 @@ export default async function HomePage() {
     name: SITE_NAME,
     url: SITE_URL,
     description: SITE_DESCRIPTION,
+    logo: `${SITE_URL}/brand/shayara-mark.png`,
   };
 
   return (

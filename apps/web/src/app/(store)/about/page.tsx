@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import { ContentPage } from '@/components/layout/content-page';
 
@@ -11,6 +12,15 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <ContentPage eyebrow="Our story" title="About Shayara">
+      <Image
+        src="/brand/shayara-logo.jpg"
+        alt="The Shayara logo: a designer S with jewelled leaves above the SHAYARA wordmark"
+        width={1000}
+        height={942}
+        sizes="(min-width: 768px) 28rem, 100vw"
+        className="mb-8 w-full max-w-md rounded-md shadow-sm"
+        priority
+      />
       <p className="font-display text-2xl leading-snug text-charcoal">Everyday elegance. Your kind of shine.</p>
       <p>
         Shayara began with a simple idea: jewellery you reach for every morning should feel special without feeling precious. We design rings, necklaces, pendants,
