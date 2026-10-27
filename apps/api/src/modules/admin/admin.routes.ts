@@ -1,0 +1,93 @@
+import { Router } from 'express';
+import { z } from 'zod';
+import {
+  adminOrderQuerySchema,
+  adminOrderStatusSchema,
+  adminProductQuerySchema,
+  adminRefundSchema,
+  adminReviewModerationSchema,
+  adminReviewQuerySchema,
+  createProductSchema,
+  objectIdSchema,
+  stockUpdateSchema,
+  updateProductSchema,
+} from '@shayara/shared';
+import { currentUser, requireAdmin } from '../../middleware/security';
+import { parseBody, parseParams, parseQuery } from '../../utils/http';
+import { adminListReviews, moderateReview } from '../reviews/reviews.service';
+import { adminUploadsRouter } from '../uploads/uploads.routes';
+import { adminDashboard, adminGetOrder, adminListOrders, adminRefundOrder, adminUpdateOrderStatus } from './admin-orders.service';
+import {
+  adminCreateProduct,
+  adminDeleteProduct,
+  adminGetProduct,
+  adminListProducts,
+  adminUpdateProduct,
+  adminUpdateStock,
+} from './admin-products.service';
+
+const idParams = z.object({ id: objectIdSchema });
+
+export const adminRouter = Router();
+// Every admin route requires an authenticated admin, checked against the database.
+adminRouter.use(requireAdmin, (_req, res, next) => {
+  res.set('Cache-Control', 'no-store');
+  next();
+});
+
+adminRouter.get('/dashboard', async (_req, res) => {
+  res.json(await adminDashboard());
+});
+
+/* Products */
+adminRouter.get('/products', async (req, res) => {
+  res.json(await adminListProducts(parseQuery(req, adminProductQuerySchema)));
+});
+adminRouter.get('/products/:id', async (req, res) => {
+  res.json(await adminGetProduct(parseParams(req, idParams).id));
+});
+adminRouter.post('/products', async (req, res) => {
+  res.status(201).json(await adminCreateProduct(parseBody(req, createProductSchema)));
+});
+adminRouter.patch('/products/:id', async (req, res) => {
+  const { id } = parseParams(req, idParams);
+  res.json(await adminUpdateProduct(id, parseBody(req, updateProductSchema)));
+});
+adminRouter.delete('/products/:id', async (req, res) => {
+  res.json(await adminDeleteProduct(parseParams(req, idParams).id));
+});
+adminRouter.patch('/products/:id/stock', async (req, res) => {
+  const { id } = parseParams(req, idParams);
+  res.json(await adminUpdateStock(id, parseBody(req, stockUpdateSchema), currentUser(req)._id));
+});
+
+/* Orders */
+adminRouter.get('/orders', async (req, res) => {
+  res.json(await adminListOrders(parseQuery(req, adminOrderQuerySchema)));
+});
+adminRouter.get('/orders/:id', async (req, res) => {
+  res.json(await adminGetOrder(parseParams(req, idParams).id));
+});
+adminRouter.patch('/orders/:id/status', async (req, res) => {
+  const { id } = parseParams(req, idParams);
+  res.json(await adminUpdateOrderStatus(id, parseBody(req, adminOrderStatusSchema)));
+});
+adminRouter.post('/orders/:id/refund', async (req, res) => {
+  const { id } = parseParams(req, idParams);
+  res.json(await adminRefundOrder(id, parseBody(req, adminRefundSchema), currentUser(req)._id));
+});
+
+/* Reviews */
+adminRouter.get('/reviews', async (req, res) => {
+  const { page, limit, status } = parseQuery(req, adminReviewQuerySchema);
+  res.json(await adminListReviews(page, limit, status));
+});
+adminRouter.patch('/reviews/:id', async (req, res) => {
+  const { id } = parseParams(req, idParams);
+  const { status, moderationNote } = parseBody(req, adminReviewModerationSchema);
+  const review = await moderateReview(id, currentUser(req)._id, status, moderationNote);
+  res.json({ id: review._id.toString(), status: review.status });
+});
+
+/* Uploads */
+adminRouter.use('/uploads', adminUploadsRouter);

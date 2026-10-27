@@ -1,0 +1,41 @@
+{
+  "name": "shayara",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Shayara — artificial & fashion jewellery e-commerce (Next.js storefront + Express API)",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "concurrently -n api,web -c magenta,cyan \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:api": "npm run dev --workspace=@shayara/api",
+    "dev:web": "npm run dev --workspace=@shayara/web",
+    "db:dev": "npm run db:dev --workspace=@shayara/api",
+    "seed": "npm run seed --workspace=@shayara/api",
+    "create-admin": "npm run create-admin --workspace=@shayara/api --",
+    "lint": "eslint .",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "test:e2e": "npm run test:e2e --workspace=@shayara/web",
+    "build": "npm run build --workspace=@shayara/api && npm run build --workspace=@shayara/web",
+    "check": "npm run lint && npm run typecheck && npm run test && npm run build"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@next/eslint-plugin-next": "^16.4.3",
+    "concurrently": "^10.0.6",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.4.3",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.13.0",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.72.1"
+  },
+  "overrides": {
+    "effect": "^3.22.4"
+  }
+}
