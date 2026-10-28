@@ -6,8 +6,9 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
   const sp = await searchParams;
   const page = Number(sp.page) > 1 ? Number(sp.page) : 1;
   return {
-    title: page > 1 ? `Shop all jewellery — page ${page}` : 'Shop all jewellery',
-    description: 'Browse all Shayara rings, necklaces, pendants, bracelets and anklets in gold, silver and rose gold tones.',
+    title: `Shop All Artificial Jewellery – Rings, Necklaces, Bangles & Anklets${page > 1 ? ` — page ${page}` : ''}`,
+    description:
+      'Browse all Shayara fashion jewellery: rings, necklaces, pendants, bracelets, bangles and anklets in gold, silver and rose gold tones. Free shipping over ₹999 and easy 7-day returns.',
     alternates: { canonical: page > 1 ? `/shop?page=${page}` : '/shop' },
     robots: hasNonIndexableParams(sp) ? { index: false, follow: true } : undefined,
   };

@@ -65,7 +65,10 @@ export async function listApprovedReviews(productId: string, page: number, limit
   return { ...paginate(items, total, page, limit), distribution: dist };
 }
 
-/** Only customers who received the product in a delivered order may review it, once. */
+/**
+ * Only customers who received the product in a delivered order may review it, once.
+ * Reviews publish immediately; admins can reject (hide) them afterwards.
+ */
 export async function createReview(user: User, productId: string, input: CreateReviewInput) {
   const product = await ProductModel.findOne({ _id: productId, status: { $ne: 'draft' } }).select('_id').lean();
   if (!product) throw notFound('Product not found');
@@ -81,7 +84,8 @@ export async function createReview(user: User, productId: string, input: CreateR
     throw new AppError(403, 'NOT_VERIFIED_PURCHASE', 'You can review this product after it has been delivered to you');
   }
   try {
-    const review = await ReviewModel.create({ ...input, userId: user._id, productId: product._id, orderId: order._id, status: 'pending' });
+    const review = await ReviewModel.create({ ...input, userId: user._id, productId: product._id, orderId: order._id, status: 'approved' });
+    await recomputeProductRating(product._id);
     return toReviewDto(review, user.name);
   } catch (err) {
     if (isDuplicateKeyError(err)) throw new AppError(409, 'ALREADY_REVIEWED', 'You have already reviewed this product');
@@ -93,16 +97,13 @@ export async function updateOwnReview(user: User, reviewId: string, input: Parti
   const review = await ReviewModel.findById(reviewId);
   if (!review) throw notFound('Review not found');
   if (!review.userId.equals(user._id)) throw forbidden('You can only edit your own reviews');
-  const wasApproved = review.status === 'approved';
   if (input.rating !== undefined) review.rating = input.rating;
   if (input.title !== undefined) review.title = input.title;
   if (input.comment !== undefined) review.comment = input.comment;
-  // Edited reviews go back through moderation.
-  review.status = 'pending';
-  review.moderatedAt = null;
-  review.moderatedBy = null;
+  // Edits stay published; a review an admin rejected stays hidden.
+  if (review.status !== 'rejected') review.status = 'approved';
   await review.save();
-  if (wasApproved) await recomputeProductRating(review.productId);
+  await recomputeProductRating(review.productId);
   return toReviewDto(review, user.name);
 }
 

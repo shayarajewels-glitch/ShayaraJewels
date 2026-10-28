@@ -184,7 +184,7 @@ function Checkout() {
                 <li key={l.productId} className="flex gap-3 text-sm">
                   <div className="relative size-14 shrink-0 overflow-hidden rounded-sm bg-ivory-deep">
                     {l.image && <ProductImage src={l.image.url} alt={l.image.alt} fill sizes="56px" />}
-                    <span className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-charcoal text-[0.65rem] text-ivory">{l.quantity}</span>
+                    <span className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-rose-deep text-[0.65rem] text-ivory">{l.quantity}</span>
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="truncate">{l.name}</p>

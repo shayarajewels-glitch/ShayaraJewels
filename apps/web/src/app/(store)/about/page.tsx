@@ -13,12 +13,12 @@ export default function AboutPage() {
   return (
     <ContentPage eyebrow="Our story" title="About Shayara">
       <Image
-        src="/brand/shayara-logo.jpg"
-        alt="The Shayara logo: a designer S with jewelled leaves above the SHAYARA wordmark"
-        width={1000}
-        height={942}
+        src="/brand/shayara-logo-full.png"
+        alt="The Shayara logo: a jewelled gold S above the SHAYARA wordmark and the words Modern Indian Jewellery"
+        width={758}
+        height={707}
         sizes="(min-width: 768px) 28rem, 100vw"
-        className="mb-8 w-full max-w-md rounded-md shadow-sm"
+        className="mb-8 w-full max-w-md"
         priority
       />
       <p className="font-display text-2xl leading-snug text-charcoal">Everyday elegance. Your kind of shine.</p>

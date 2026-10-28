@@ -16,14 +16,18 @@ import { useQueryState } from './use-query-state';
 
 export function ReviewsModeration() {
   const { params, set } = useQueryState();
-  const status = params.get('status') ?? 'pending';
+  // Reviews publish immediately, so the default view is what customers can see.
+  const status = params.get('status') ?? 'approved';
   const page = params.get('page') ?? '1';
   const qs = new URLSearchParams({ page, limit: '20', ...(status !== 'all' ? { status } : {}) });
   const { data, error, loading, reload } = useAdminResource<Paginated<AdminReviewDto>>(`/admin/reviews?${qs.toString()}`);
 
   return (
     <div>
-      <AdminPageHeader title="Reviews" description="Only customers with a delivered order can review. Approved reviews update the product rating." />
+      <AdminPageHeader
+        title="Reviews"
+        description="Only customers with a delivered order can review. Reviews go live immediately; reject one to hide it from the store and the product rating."
+      />
       <div className="mb-6 flex flex-wrap gap-2" role="tablist" aria-label="Filter by status">
         {[...REVIEW_STATUSES, 'all'].map((s) => (
           <button
@@ -31,10 +35,10 @@ export function ReviewsModeration() {
             type="button"
             role="tab"
             aria-selected={status === s}
-            onClick={() => set({ status: s === 'pending' ? null : s })}
-            className={cn('rounded-full border px-4 py-1.5 text-xs capitalize', status === s ? 'border-charcoal bg-charcoal text-ivory' : 'border-input hover:border-charcoal')}
+            onClick={() => set({ status: s === 'approved' ? null : s })}
+            className={cn('rounded-full border px-4 py-1.5 text-xs capitalize', status === s ? 'border-rose-deep bg-rose-deep text-ivory' : 'border-input hover:border-rose-deep')}
           >
-            {s}
+            {s === 'approved' ? 'Published' : s}
           </button>
         ))}
       </div>
@@ -42,8 +46,8 @@ export function ReviewsModeration() {
       {error && <Alert variant="error" title="Could not load reviews">{error}</Alert>}
       {loading && !data && <Skeleton className="h-64" />}
       {data && data.items.length === 0 && (
-        <EmptyState icon={<MessageSquareText />} title={status === 'pending' ? 'All caught up' : 'No reviews here'}>
-          {status === 'pending' ? 'There are no reviews waiting for moderation.' : 'Try another filter.'}
+        <EmptyState icon={<MessageSquareText />} title={status === 'approved' ? 'No reviews yet' : 'No reviews here'}>
+          {status === 'approved' ? 'Reviews appear here as soon as customers post them.' : 'Try another filter.'}
         </EmptyState>
       )}
       {data && data.items.length > 0 && (

@@ -1,13 +1,22 @@
 import { jsonLd } from '@/lib/json-ld';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { FINISH_LABELS, categoryByType, type ProductDetailDto } from '@shayara/shared';
+import {
+  FINISH_LABELS,
+  FREE_SHIPPING_THRESHOLD_PAISE,
+  RETURN_WINDOW_DAYS,
+  STANDARD_SHIPPING_PAISE,
+  categoryByType,
+  productSeoDescription,
+  productSeoTitle,
+  type ProductDetailDto,
+} from '@shayara/shared';
 import { Breadcrumbs } from '@/components/layout/page-heading';
 import { ProductDetailView } from '@/components/product/product-detail-view';
 import { ProductRail } from '@/components/product/product-rail';
 import { ReviewsSection } from '@/components/product/reviews-section';
 import { ApiNotFoundError, serverApi } from '@/lib/api-server';
-import { SITE_NAME, SITE_URL } from '@/lib/config';
+import { DEMO_NOTICE, SITE_NAME, SITE_URL } from '@/lib/config';
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -25,20 +34,16 @@ const absolute = (url: string) => (url.startsWith('http') ? url : `${SITE_URL}${
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const product = await loadProduct(slug);
-  const title = product.seoTitle || `${product.name} — ${FINISH_LABELS[product.finish]} ${categoryByType(product.type).name.replace(/s$/, '')}`;
-  const description = product.seoDescription || product.description.slice(0, 160);
+  const title = product.seoTitle || productSeoTitle(product);
+  const description = product.seoDescription || productSeoDescription(product);
   const image = product.images[0];
+  const images = image && !image.url.endsWith('.svg') ? [{ url: absolute(image.url), alt: image.alt }] : undefined;
   return {
     title,
     description,
     alternates: { canonical: `/products/${product.slug}` },
-    openGraph: {
-      type: 'website',
-      title,
-      description,
-      url: `/products/${product.slug}`,
-      images: image && !image.url.endsWith('.svg') ? [{ url: absolute(image.url), alt: image.alt }] : undefined,
-    },
+    openGraph: { type: 'website', title, description, url: `/products/${product.slug}`, images },
+    twitter: { card: 'summary_large_image', title, description, images: images?.map((i) => i.url) },
   };
 }
 
@@ -68,8 +73,31 @@ export default async function ProductPage({ params }: Props) {
       availability: product.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
       itemCondition: 'https://schema.org/NewCondition',
       seller: { '@type': 'Organization', name: SITE_NAME },
+      shippingDetails: {
+        '@type': 'OfferShippingDetails',
+        shippingRate: {
+          '@type': 'MonetaryAmount',
+          value: product.pricePaise >= FREE_SHIPPING_THRESHOLD_PAISE ? '0' : (STANDARD_SHIPPING_PAISE / 100).toFixed(2),
+          currency: 'INR',
+        },
+        shippingDestination: { '@type': 'DefinedRegion', addressCountry: 'IN' },
+        deliveryTime: {
+          '@type': 'ShippingDeliveryTime',
+          handlingTime: { '@type': 'QuantitativeValue', minValue: 1, maxValue: 2, unitCode: 'DAY' },
+          transitTime: { '@type': 'QuantitativeValue', minValue: 3, maxValue: 7, unitCode: 'DAY' },
+        },
+      },
+      hasMerchantReturnPolicy: {
+        '@type': 'MerchantReturnPolicy',
+        applicableCountry: 'IN',
+        returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
+        merchantReturnDays: RETURN_WINDOW_DAYS,
+        returnMethod: 'https://schema.org/ReturnByMail',
+        url: `${SITE_URL}/returns-policy`,
+      },
     },
-    ...(product.reviewCount > 0
+    // While the store runs as a demo (DEMO_NOTICE set), ratings are not reported to search engines.
+    ...(product.reviewCount > 0 && !DEMO_NOTICE
       ? { aggregateRating: { '@type': 'AggregateRating', ratingValue: product.averageRating.toFixed(1), reviewCount: product.reviewCount } }
       : {}),
   };

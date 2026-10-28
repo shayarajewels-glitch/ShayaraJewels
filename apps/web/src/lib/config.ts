@@ -8,10 +8,20 @@ export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3
 
 export const SITE_NAME = 'Shayara';
 export const SITE_TAGLINE = 'Everyday elegance. Your kind of shine.';
+/** Homepage <title>: the brand plus what people search for. */
+export const SITE_TITLE = 'Shayara – Artificial Jewellery Online for Women in India';
 export const SITE_DESCRIPTION =
-  'Shayara designs contemporary artificial and fashion jewellery — rings, necklaces, pendants, bracelets and anklets in gold, silver and rose gold tones.';
+  'Shop artificial and fashion jewellery online at Shayara — rings, necklaces, pendants, bracelets, bangles and anklets in gold, silver and rose gold tones. Free shipping over ₹999, COD available.';
 
 export const SUPPORT_EMAIL = 'shayarajewels@gmail.com';
+
+/**
+ * Shown in the footer while the store runs as a student project with demo
+ * content and Razorpay test mode; while set, product ratings are not sent to
+ * search engines. Set to null when taking real orders on a fresh database.
+ */
+export const DEMO_NOTICE: string | null =
+  'Shayara is a student project demo store: payments run in test mode, orders are not fulfilled and some reviews are sample content.';
 
 /** Displayed form and the E.164 form used for tel: and WhatsApp links. */
 export const SUPPORT_PHONE = { display: '+91 70111 67970', e164: '+917011167970' } as const;

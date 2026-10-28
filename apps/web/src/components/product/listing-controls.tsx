@@ -76,7 +76,7 @@ function FilterForm({ showType, onApplied }: { showType: boolean; onApplied?: ()
                   type="button"
                   aria-pressed={active}
                   onClick={() => update({ type: c.type || null })}
-                  className={cn('rounded-full border px-3.5 py-1.5 text-xs transition-colors', active ? 'border-charcoal bg-charcoal text-ivory' : 'border-input hover:border-charcoal')}
+                  className={cn('rounded-full border px-3.5 py-1.5 text-xs transition-colors', active ? 'border-charcoal bg-rose-deep text-ivory' : 'border-input hover:border-rose-deep')}
                 >
                   {c.name}
                 </button>

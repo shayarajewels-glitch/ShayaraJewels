@@ -31,6 +31,24 @@ export async function replacePlaceholderImages(): Promise<number> {
   return updated;
 }
 
+/**
+ * Clears the SEO title/description that older seeds copied onto sample
+ * products, so the storefront's generated defaults apply. Values edited in
+ * the admin no longer match the old pattern and are kept. Returns how many
+ * products were updated.
+ */
+export async function clearLegacySeoDefaults(): Promise<number> {
+  let updated = 0;
+  for (const p of SEED_PRODUCTS) {
+    const res = await ProductModel.updateOne(
+      { sku: p.sku, seoTitle: `${p.name} — ${FINISH_LABELS[p.finish]} ${p.type}`.slice(0, 70), seoDescription: p.description.slice(0, 160) },
+      { $unset: { seoTitle: 1, seoDescription: 1 } },
+    );
+    updated += res.modifiedCount;
+  }
+  return updated;
+}
+
 /** Inserts sample products whose SKU is not present yet. Returns how many were added. Never deletes. */
 export async function seedCatalogue(): Promise<number> {
   let created = 0;
@@ -53,8 +71,7 @@ export async function seedCatalogue(): Promise<number> {
       publishedAt: new Date(),
       featured: p.featured ?? false,
       searchKeywords: p.keywords,
-      seoTitle: `${p.name} — ${FINISH_LABELS[p.finish]} ${p.type}`.slice(0, 70),
-      seoDescription: p.description.slice(0, 160),
+      // No seoTitle/seoDescription: the storefront generates keyword-rich defaults (productSeoTitle).
       // Stagger createdAt so "new arrivals" has a stable order.
       createdAt: new Date(Date.now() - (SEED_PRODUCTS.length - i) * 60_000),
     });

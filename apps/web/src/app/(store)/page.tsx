@@ -46,13 +46,18 @@ export default async function HomePage() {
   ]);
   const spotlight = featured.items[0];
 
-  const orgJsonLd = {
+  const storeJsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'Organization',
+    '@type': 'JewelryStore',
+    '@id': `${SITE_URL}/#store`,
     name: SITE_NAME,
     url: SITE_URL,
     description: SITE_DESCRIPTION,
-    logo: `${SITE_URL}/brand/shayara-mark.png`,
+    logo: `${SITE_URL}/brand/shayara-logo-full.png`,
+    image: `${SITE_URL}/opengraph-image.jpg`,
+    priceRange: '₹399 – ₹2,499',
+    currenciesAccepted: 'INR',
+    paymentAccepted: 'UPI, Credit Card, Debit Card, Netbanking, Cash on Delivery',
     sameAs: Object.values(SOCIAL_LINKS),
     email: SUPPORT_EMAIL,
     telephone: SUPPORT_PHONE.e164,
@@ -65,10 +70,20 @@ export default async function HomePage() {
       addressCountry: 'IN',
     },
   };
+  const websiteJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': `${SITE_URL}/#website`,
+    name: SITE_NAME,
+    url: SITE_URL,
+    inLanguage: 'en-IN',
+    publisher: { '@id': `${SITE_URL}/#store` },
+  };
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(orgJsonLd)} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(storeJsonLd)} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(websiteJsonLd)} />
 
       {/* Hero */}
       <section className="bg-glow relative overflow-hidden">
@@ -78,7 +93,7 @@ export default async function HomePage() {
           <div className="max-w-xl">
             <p className="mb-6 inline-flex items-center gap-2 rounded-full border border-champagne/50 bg-card/70 px-4 py-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-rose-deep backdrop-blur">
               <Sparkles className="size-3.5 text-champagne" aria-hidden />
-              New season edit
+              Artificial &amp; fashion jewellery
             </p>
             <h1 className="text-5xl leading-[1.02] sm:text-6xl lg:text-[5.25rem]">
               Everyday elegance.
@@ -108,7 +123,7 @@ export default async function HomePage() {
           </div>
 
           <div className="relative mx-auto w-full max-w-md md:max-w-none">
-            <div className="arch relative mx-auto aspect-[4/5] w-[82%] overflow-hidden bg-card shadow-[0_40px_80px_-40px_rgba(90,60,40,0.45)] ring-8 ring-card/70">
+            <div className="arch relative mx-auto aspect-[4/5] w-[82%] overflow-hidden bg-card shadow-[0_40px_80px_-40px_rgba(212,175,55,0.22)] ring-8 ring-card/70">
               <ProductImage src="/images/products/nck-aria-g-1.jpg" alt="Aria layered necklace in gold tone" fill priority sizes="(min-width: 768px) 38vw, 80vw" />
             </div>
             <div className="arch absolute -right-1 top-6 hidden aspect-[3/4] w-[30%] overflow-hidden bg-card shadow-xl ring-4 ring-card sm:block">
@@ -117,7 +132,7 @@ export default async function HomePage() {
             {spotlight && (
               <Link
                 href={`/products/${spotlight.slug}`}
-                className="absolute -bottom-4 left-0 flex max-w-[16rem] items-center gap-3 rounded-2xl bg-card/95 p-3 pr-5 shadow-[0_20px_40px_-20px_rgba(90,60,40,0.45)] ring-1 ring-border backdrop-blur transition-transform hover:-translate-y-0.5 sm:left-2"
+                className="absolute -bottom-4 left-0 flex max-w-[16rem] items-center gap-3 rounded-2xl bg-card/95 p-3 pr-5 shadow-[0_20px_40px_-20px_rgba(212,175,55,0.22)] ring-1 ring-border backdrop-blur transition-transform hover:-translate-y-0.5 sm:left-2"
               >
                 {spotlight.image && (
                   <span className="relative size-14 shrink-0 overflow-hidden rounded-xl bg-ivory-deep">
@@ -190,7 +205,7 @@ export default async function HomePage() {
               return (
                 <li key={c.slug}>
                   <Link href={`/categories/${c.slug}`} className="group block text-center">
-                    <div className={`arch relative aspect-[3/4] overflow-hidden bg-gradient-to-b ${tile.tint} ring-1 ring-card transition-shadow duration-500 group-hover:shadow-[0_24px_40px_-24px_rgba(90,60,40,0.5)]`}>
+                    <div className={`arch relative aspect-[3/4] overflow-hidden bg-gradient-to-b ${tile.tint} ring-1 ring-card transition-shadow duration-500 group-hover:shadow-[0_24px_40px_-24px_rgba(212,175,55,0.22)]`}>
                       <ProductImage src={tile.image} alt="" fill sizes="(min-width: 768px) 18vw, 45vw" className="transition-transform duration-700 group-hover:scale-110" />
                     </div>
                     <p className="mt-4 font-display text-2xl group-hover:text-rose-deep">{c.name}</p>
@@ -214,7 +229,7 @@ export default async function HomePage() {
         <ul className="grid gap-5 md:grid-cols-3">
           {FINISH_TILES.map((f) => (
             <li key={f.finish}>
-              <Link href={`/shop?finish=${f.finish}`} className="group relative flex items-center gap-5 overflow-hidden rounded-2xl bg-card p-5 ring-1 ring-border transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_24px_40px_-24px_rgba(90,60,40,0.45)]">
+              <Link href={`/shop?finish=${f.finish}`} className="group relative flex items-center gap-5 overflow-hidden rounded-2xl bg-card p-5 ring-1 ring-border transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_24px_40px_-24px_rgba(212,175,55,0.22)]">
                 <span className={`relative size-24 shrink-0 overflow-hidden rounded-full bg-gradient-to-br ${f.swatch} shadow-inner ring-4 ring-ivory`}>
                   <ProductImage src={f.image} alt="" fill sizes="96px" className="transition-transform duration-700 group-hover:scale-110" />
                 </span>

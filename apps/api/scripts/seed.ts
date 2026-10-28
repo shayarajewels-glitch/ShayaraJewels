@@ -11,7 +11,7 @@ import { parseArgs } from 'node:util';
 import { connectDatabase, disconnectDatabase } from '../src/config/db';
 import { getConfig } from '../src/config/env';
 import { SEED_PRODUCTS } from './catalogue-data';
-import { replacePlaceholderImages, seedCatalogue } from './seed-lib';
+import { clearLegacySeoDefaults, replacePlaceholderImages, seedCatalogue } from './seed-lib';
 
 async function main() {
   const { values } = parseArgs({ options: { 'allow-production': { type: 'boolean', default: false } } });
@@ -23,7 +23,10 @@ async function main() {
   try {
     const created = await seedCatalogue();
     const photos = await replacePlaceholderImages();
-    console.log(`Seed complete: ${created} product(s) added, ${SEED_PRODUCTS.length - created} already present, ${photos} switched to photos.`);
+    const seo = await clearLegacySeoDefaults();
+    console.log(
+      `Seed complete: ${created} product(s) added, ${SEED_PRODUCTS.length - created} already present, ${photos} switched to photos, ${seo} given generated SEO text.`,
+    );
   } finally {
     await disconnectDatabase();
   }

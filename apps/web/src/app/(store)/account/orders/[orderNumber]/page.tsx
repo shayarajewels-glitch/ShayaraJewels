@@ -245,7 +245,7 @@ function OrderDetail() {
               productId={dialog.review}
               onDone={() => {
                 setDialog(null);
-                toast.success('Thank you! Your review will appear once approved.');
+                toast.success('Thank you! Your review is now live.');
                 void load();
               }}
             />

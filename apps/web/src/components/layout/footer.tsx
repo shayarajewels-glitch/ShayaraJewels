@@ -2,7 +2,7 @@ import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { CATEGORIES } from '@shayara/shared';
 import { Logo } from '@/components/brand/logo';
-import { SITE_TAGLINE, SOCIAL_LINKS, STORE_ADDRESS_TEXT, SUPPORT_EMAIL, SUPPORT_PHONE } from '@/lib/config';
+import { DEMO_NOTICE, SITE_TAGLINE, SOCIAL_LINKS, STORE_ADDRESS_TEXT, SUPPORT_EMAIL, SUPPORT_PHONE } from '@/lib/config';
 
 /** Brand marks drawn inline (the icon set has no brand logos). */
 const SOCIALS = [
@@ -81,6 +81,7 @@ export function Footer() {
           <div className="space-y-1">
             <p>© {new Date().getFullYear()} Shayara. All rights reserved.</p>
             <address className="not-italic">{STORE_ADDRESS_TEXT}</address>
+            {DEMO_NOTICE && <p className="text-champagne/80">{DEMO_NOTICE}</p>}
           </div>
           <p>
             Questions? <a className="underline underline-offset-4 hover:text-charcoal" href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>

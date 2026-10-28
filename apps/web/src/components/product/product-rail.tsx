@@ -24,7 +24,7 @@ export function ProductRail({ eyebrow, title, href, products }: { eyebrow?: stri
         {href && (
           <Link
             href={href}
-            className="eyebrow group/all inline-flex shrink-0 items-center gap-2 rounded-full border border-charcoal/20 px-4 py-2.5 transition-colors hover:border-charcoal hover:bg-charcoal hover:text-ivory"
+            className="eyebrow group/all inline-flex shrink-0 items-center gap-2 rounded-full border border-charcoal/20 px-4 py-2.5 transition-colors hover:border-rose-deep hover:bg-rose-deep hover:text-ivory"
           >
             View all
             <ArrowRight className="size-3.5 transition-transform group-hover/all:translate-x-0.5" aria-hidden />

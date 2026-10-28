@@ -77,10 +77,10 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/80 bg-ivory/95 backdrop-blur supports-[backdrop-filter]:bg-ivory/85">
-      <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-2 focus:z-50 focus:rounded-sm focus:bg-charcoal focus:px-4 focus:py-2 focus:text-ivory">
+      <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-2 focus:z-50 focus:rounded-sm focus:bg-rose-deep focus:px-4 focus:py-2 focus:text-ivory">
         Skip to content
       </a>
-      <div className="container-page grid h-[4.5rem] grid-cols-[1fr_auto_1fr] items-center gap-4">
+      <div className="container-page grid h-20 grid-cols-[auto_1fr_auto] items-center gap-4 lg:gap-8">
         <div className="flex items-center gap-1">
           <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
             <SheetTrigger className="rounded-sm p-2 lg:hidden" aria-label="Open menu">
@@ -114,12 +114,14 @@ export function Header() {
               </nav>
             </SheetContent>
           </Sheet>
-          <div className="hidden w-full max-w-xs lg:block">
+          <Logo responsive />
+        </div>
+
+        <div className="hidden justify-center lg:flex">
+          <div className="w-full max-w-xl">
             <SearchForm />
           </div>
         </div>
-
-        <Logo responsive />
 
         <div className="flex items-center justify-end gap-0.5 sm:gap-1">
           <button type="button" onClick={() => setSearchOpen((v) => !v)} className="rounded-sm p-2 hover:bg-ivory-deep lg:hidden" aria-label="Search" aria-expanded={searchOpen}>

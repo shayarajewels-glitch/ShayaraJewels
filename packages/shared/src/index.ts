@@ -8,3 +8,4 @@ export * from './schemas/commerce';
 export * from './types/api';
 export * from './utils/money';
 export * from './utils/slug';
+export * from './utils/seo';

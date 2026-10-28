@@ -10,7 +10,7 @@ export function ProductCard({ product, priority = false, className }: { product:
   const off = discountPercent(product.pricePaise, product.compareAtPricePaise);
   return (
     <article className={cn('group relative flex flex-col', className)}>
-      <div className="relative aspect-[4/5] overflow-hidden rounded-xl bg-ivory-deep ring-1 ring-border/60 transition-shadow duration-500 group-hover:shadow-[0_18px_40px_-18px_rgba(90,60,40,0.35)]">
+      <div className="relative aspect-[4/5] overflow-hidden rounded-xl bg-ivory-deep ring-1 ring-border/60 transition-shadow duration-500 group-hover:shadow-[0_18px_40px_-18px_rgba(212,175,55,0.22)]">
         {product.image ? (
           <>
             <ProductImage

@@ -162,7 +162,7 @@ export function MediaManager({ value, onChange, productName }: { value: MediaSta
                 <Card className="flex flex-col gap-3 p-3 sm:flex-row sm:items-center">
                   <div className="relative size-20 shrink-0 overflow-hidden rounded-sm bg-ivory-deep">
                     <ProductImage src={img.url} alt="" fill sizes="80px" />
-                    {i === 0 && <span className="absolute left-1 top-1 rounded-sm bg-charcoal px-1.5 py-0.5 text-[0.6rem] font-semibold uppercase text-ivory">Cover</span>}
+                    {i === 0 && <span className="absolute left-1 top-1 rounded-sm bg-rose-deep px-1.5 py-0.5 text-[0.6rem] font-semibold uppercase text-ivory">Cover</span>}
                   </div>
                   <div className="min-w-0 flex-1">
                     <Label htmlFor={`alt-${i}`} className="text-xs">

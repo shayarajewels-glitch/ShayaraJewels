@@ -28,23 +28,18 @@ describe('reviews', () => {
     expect(res.body.error.code).toBe('NOT_VERIFIED_PURCHASE');
   });
 
-  it('accepts one moderated review per product and updates aggregates on approval', async () => {
+  it('publishes one review per product immediately and lets admins hide it', async () => {
     const { client, product, orderNumber } = await customerWithOrder('delivered');
     const order = (await client.get(`/orders/${orderNumber}`)).body;
     expect(order.reviewableProductIds).toContain(product.id);
 
     const created = await client.post(`/products/${product.id}/reviews`, review);
     expect(created.status).toBe(201);
-    expect(created.body.status).toBe('pending');
+    expect(created.body.status).toBe('approved');
     expect(created.body.authorName).toBe('Priya N.');
     expect((await client.post(`/products/${product.id}/reviews`, review)).status).toBe(409);
 
-    // Pending reviews are not public and do not count.
-    expect((await client.get(`/products/${product.id}/reviews`)).body.items).toHaveLength(0);
-
-    const admin = await adminClient();
-    const approve = await admin.patch(`/admin/reviews/${created.body.id}`, { status: 'approved' });
-    expect(approve.status).toBe(200);
+    // Public and counted straight away.
     const p = await ProductModel.findById(product._id).lean();
     expect(p?.reviewCount).toBe(1);
     expect(p?.averageRating).toBe(5);
@@ -53,9 +48,16 @@ describe('reviews', () => {
     expect(pub.items).toHaveLength(1);
     expect(pub.distribution[5]).toBe(1);
 
-    // Editing sends it back to moderation and removes it from the aggregate.
+    // Edits stay published and update the aggregate.
     await client.patch(`/reviews/${created.body.id}`, { rating: 3 });
+    expect((await ProductModel.findById(product._id).lean())?.averageRating).toBe(3);
+
+    // Rejecting hides it and removes it from the aggregate; later edits keep it hidden.
+    const admin = await adminClient();
+    expect((await admin.patch(`/admin/reviews/${created.body.id}`, { status: 'rejected' })).status).toBe(200);
     expect((await ProductModel.findById(product._id).lean())?.reviewCount).toBe(0);
+    await client.patch(`/reviews/${created.body.id}`, { rating: 4 });
+    expect((await client.get(`/products/${product.id}/reviews`)).body.items).toHaveLength(0);
   });
 
   it('validates rating values', async () => {

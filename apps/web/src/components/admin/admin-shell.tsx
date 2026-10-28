@@ -74,12 +74,12 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-dvh bg-ivory lg:grid lg:grid-cols-[15rem_1fr]">
-      <a href="#admin-main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-2 focus:z-50 focus:rounded-sm focus:bg-charcoal focus:px-4 focus:py-2 focus:text-ivory">
+      <a href="#admin-main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-2 focus:z-50 focus:rounded-sm focus:bg-rose-deep focus:px-4 focus:py-2 focus:text-ivory">
         Skip to content
       </a>
       {/* Mobile top bar */}
       <div className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-ivory px-4 py-3 lg:hidden">
-        <Logo href="/admin" />
+        <Logo href="/admin" size="sm" />
         <button type="button" onClick={() => setNavOpen((v) => !v)} className="rounded-sm p-2 hover:bg-ivory-deep" aria-expanded={navOpen} aria-controls="admin-nav" aria-label={navOpen ? 'Close menu' : 'Open menu'}>
           {navOpen ? <X className="size-5" /> : <Menu className="size-5" />}
         </button>
@@ -93,7 +93,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         )}
       >
         <div className="hidden px-6 py-6 lg:block">
-          <Logo href="/admin" />
+          <Logo href="/admin" size="sm" />
           <p className="eyebrow mt-3 text-center text-[0.6rem]">Admin</p>
         </div>
         <nav aria-label="Admin" className="flex-1 px-3 py-3 lg:py-0">
@@ -105,7 +105,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                   aria-current={isActive(href, exact) ? 'page' : undefined}
                   className={cn(
                     'flex items-center gap-3 rounded-sm px-3 py-2.5 text-sm transition-colors',
-                    isActive(href, exact) ? 'bg-charcoal text-ivory' : 'text-charcoal hover:bg-ivory-deep',
+                    isActive(href, exact) ? 'bg-rose-deep text-ivory' : 'text-charcoal hover:bg-ivory-deep',
                   )}
                 >
                   <Icon className="size-4" aria-hidden />

@@ -59,7 +59,7 @@ export function PurchasePanel({ product, preview = false }: { product: ProductDe
                   setSize(s);
                   setSizeError(false);
                 }}
-                className={cn('min-w-12 rounded-sm border px-3 py-2 text-sm transition-colors', size === s ? 'border-charcoal bg-charcoal text-ivory' : 'border-input hover:border-charcoal')}
+                className={cn('min-w-12 rounded-sm border px-3 py-2 text-sm transition-colors', size === s ? 'border-charcoal bg-rose-deep text-ivory' : 'border-input hover:border-rose-deep')}
               >
                 {s}
               </button>

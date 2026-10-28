@@ -116,6 +116,55 @@
     background: var(--rose-soft);
     color: var(--charcoal);
   }
+
+  /* Native controls the browser draws itself, matched to the dark theme. */
+  html {
+    scrollbar-color: var(--sand) var(--ivory);
+  }
+  select {
+    color-scheme: dark;
+  }
+  select option,
+  select optgroup {
+    background-color: var(--popover);
+    color: var(--popover-foreground);
+  }
+  select option:checked {
+    background-color: var(--rose-soft);
+    color: var(--rose-deep);
+  }
+  select option:disabled {
+    color: var(--charcoal-soft);
+  }
+  input[type='checkbox'],
+  input[type='radio'],
+  input[type='range'],
+  progress {
+    accent-color: var(--rose-deep);
+  }
+  /* Browser autofill would otherwise paint saved emails/passwords on a white or yellow field. */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  textarea:-webkit-autofill,
+  select:-webkit-autofill {
+    -webkit-text-fill-color: var(--charcoal);
+    caret-color: var(--charcoal);
+    box-shadow: 0 0 0 1000px var(--card) inset;
+    transition: background-color 9999s ease-out 0s;
+  }
+  input::-webkit-calendar-picker-indicator {
+    filter: invert(0.8) sepia(0.6) saturate(3) hue-rotate(5deg);
+  }
+  input[type='file']::file-selector-button {
+    margin-right: 0.75rem;
+    border: 1px solid var(--rose-deep);
+    border-radius: 999px;
+    background: transparent;
+    padding: 0.35rem 0.9rem;
+    color: var(--rose-deep);
+    cursor: pointer;
+  }
 }
 
 @layer components {
