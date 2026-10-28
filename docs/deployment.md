@@ -7,7 +7,22 @@ The web app and API are deployed separately. Both need **Node.js 22.12+**.
 Login uses an HTTP-only session cookie set by the API. Browsers only send it reliably when the storefront and API are on the **same site** (same registrable domain):
 
 - ✅ `https://shayara.in` (web) + `https://api.shayara.in` (API). This works with the defaults (`COOKIE_SAMESITE=lax`, host-only `__Host-` cookie).
-- ⚠️ `https://shayara.vercel.app` + `https://shayara-api.onrender.com` are different sites. The cookie becomes third-party, which many browsers block. Avoid this for production.
+- ⚠️ `https://shayara.vercel.app` + `https://shayara-api.onrender.com` are different sites. The cookie becomes third-party, which many browsers block. Avoid this for production, or use the same-origin proxy below.
+
+### No custom domain yet: same-origin proxy
+
+Set `API_PROXY_TARGET` on the web app to the API's URL. `next.config.ts` then rewrites `/api/v1/*` and `/api/uploadthing` on the storefront origin to the API, so the browser only ever talks to the storefront and the cookie stays first-party.
+
+| Where | Variable | Example |
+|---|---|---|
+| Web (Vercel) | `API_PROXY_TARGET` | `https://shayara-api.onrender.com` |
+| Web (Vercel) | `NEXT_PUBLIC_API_BASE_URL` | `https://shayara.vercel.app/api/v1` |
+| Web (Vercel) | `API_INTERNAL_BASE_URL` | `https://shayara-api.onrender.com/api/v1` (server-side rendering skips the extra hop) |
+| API (Render) | `FRONTEND_URL` | `https://shayara.vercel.app` |
+| API (Render) | `API_BASE_URL` | `https://shayara-api.onrender.com` (UploadThing callbacks and Razorpay webhooks go here directly) |
+| API (Render) | `TRUST_PROXY` | `2` (Vercel, then Render's load balancer) |
+
+`render.yaml` at the repository root is a Render Blueprint for the API with these defaults. When a custom domain is added later, switch to the `api.` subdomain layout above and remove `API_PROXY_TARGET`.
 
 Serve both over HTTPS. The API refuses to start in production if `FRONTEND_URL` is not `https://` or cookies are not secure.
 

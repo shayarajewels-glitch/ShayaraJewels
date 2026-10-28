@@ -11,6 +11,14 @@ const apiOrigin = (() => {
 const isDev = process.env.NODE_ENV !== 'production';
 
 /**
+ * Optional same-origin proxy to the API (e.g. https://shayara-api.onrender.com).
+ * Lets the storefront run on a host like *.vercel.app without a custom domain:
+ * the browser only talks to the storefront origin, so the session cookie stays
+ * first-party. Point NEXT_PUBLIC_API_BASE_URL at `<storefront>/api/v1` when set.
+ */
+const apiProxyTarget = process.env.API_PROXY_TARGET?.replace(/\/$/, '');
+
+/**
  * Content Security Policy. Razorpay Checkout needs its script, frames and API;
  * UploadThing needs its ingest hosts for direct uploads.
  */
@@ -38,6 +46,13 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [new URL('https://utfs.io/f/**'), { protocol: 'https', hostname: '*.ufs.sh', pathname: '/f/**' }],
     formats: ['image/avif', 'image/webp'],
+  },
+  async rewrites() {
+    if (!apiProxyTarget) return [];
+    return [
+      { source: '/api/v1/:path*', destination: `${apiProxyTarget}/api/v1/:path*` },
+      { source: '/api/uploadthing', destination: `${apiProxyTarget}/api/uploadthing` },
+    ];
   },
   async headers() {
     return [

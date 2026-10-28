@@ -1,0 +1,45 @@
+# Render Blueprint for the Shayara API (apps/api).
+# The storefront is deployed separately (Vercel, root directory apps/web).
+# Values marked `sync: false` are entered in the Render dashboard on first deploy.
+services:
+  - type: web
+    name: shayara-api
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm ci --include=dev && npm run build --workspace=@shayara/api
+    startCommand: npm run start --workspace=@shayara/api
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NODE_ENV
+        value: production
+      - key: TRUST_PROXY
+        value: "2"
+      - key: MAIL_TRANSPORT
+        value: disabled
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: REVALIDATE_SECRET
+        generateValue: true
+      - key: MONGODB_URI
+        sync: false
+      # e.g. https://shayara.vercel.app (the storefront)
+      - key: FRONTEND_URL
+        sync: false
+      # e.g. https://shayara-api.onrender.com (this service)
+      - key: API_BASE_URL
+        sync: false
+      # e.g. https://shayara.vercel.app/api/revalidate
+      - key: WEB_REVALIDATE_URL
+        sync: false
+      - key: UPLOADTHING_TOKEN
+        sync: false
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: RAZORPAY_WEBHOOK_SECRET
+        sync: false
