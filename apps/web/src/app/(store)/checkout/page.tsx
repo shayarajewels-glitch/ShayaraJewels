@@ -1,6 +1,6 @@
 'use client';
 
-import { Banknote, CreditCard, Lock, Plus } from 'lucide-react';
+import { Banknote, CreditCard, Lock, Plus, TicketPercent } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
@@ -10,6 +10,7 @@ import { AddressBlock, AddressForm } from '@/components/account/address-form';
 import { RequireAuth } from '@/components/account/require-auth';
 import { ProductImage } from '@/components/product/product-image';
 import { Button } from '@/components/ui/button';
+import { Input, Label } from '@/components/ui/form-controls';
 import { Alert, Card, Skeleton } from '@/components/ui/misc';
 import { useApiQuery } from '@/hooks/use-api-query';
 import { ApiError, api, errorMessage, newIdempotencyKey } from '@/lib/api-client';
@@ -31,6 +32,8 @@ function Checkout() {
   const [quoteVersion, setQuoteVersion] = useState(0);
   const [actionError, setError] = useState<string | null>(null);
   const [placing, setPlacing] = useState(false);
+  const [couponCode, setCouponCode] = useState<string | null>(null);
+  const [couponError, setCouponError] = useState<string | null>(null);
   // One key per checkout attempt: retries and double-clicks reuse it, so only one order is created.
   const idempotencyKey = useRef(newIdempotencyKey());
 
@@ -40,9 +43,15 @@ function Checkout() {
 
   useEffect(() => {
     let active = true;
-    api<Quote>('/checkout/quote', { method: 'POST', body: { paymentMethod: method } }).then(
+    api<Quote>('/checkout/quote', { method: 'POST', body: { paymentMethod: method, ...(couponCode ? { couponCode } : {}) } }).then(
       (q) => {
         if (!active) return;
+        if (couponCode && q.couponError) {
+          // Keep the reason for the coupon field and quote again without the code.
+          setCouponError(q.couponError);
+          setCouponCode(null);
+          return;
+        }
         setQuote(q);
         // Fall back to COD when online payments are not configured on the server.
         if (method === 'razorpay' && !q.onlinePaymentAvailable) setMethod('cod');
@@ -52,7 +61,7 @@ function Checkout() {
     return () => {
       active = false;
     };
-  }, [method, quoteVersion]);
+  }, [method, quoteVersion, couponCode]);
   const reloadQuote = () => setQuoteVersion((v) => v + 1);
 
   const placeOrder = async () => {
@@ -62,7 +71,7 @@ function Checkout() {
     try {
       const { order } = await api<{ order: OrderDto }>('/checkout', {
         method: 'POST',
-        body: { addressId, paymentMethod: method, expectedTotalPaise: quote.totalPaise },
+        body: { addressId, paymentMethod: method, expectedTotalPaise: quote.totalPaise, ...(quote.coupon ? { couponCode: quote.coupon.code } : {}) },
         headers: { 'Idempotency-Key': idempotencyKey.current },
       });
       await refreshCart().catch(() => undefined);
@@ -83,6 +92,11 @@ function Checkout() {
       if (err instanceof ApiError && (err.code === 'PRICE_CHANGED' || err.code === 'CART_INVALID' || err.code === 'INSUFFICIENT_STOCK')) {
         reloadQuote();
         await refreshCart().catch(() => undefined);
+      }
+      if (err instanceof ApiError && err.code.startsWith('COUPON_')) {
+        // The coupon stopped being valid since the quote (e.g. it expired); show the total without it.
+        setCouponError(err.message);
+        setCouponCode(null);
       }
       setError(errorMessage(err));
     } finally {
@@ -195,11 +209,30 @@ function Checkout() {
                 </li>
               ))}
             </ul>
+            <CouponBox
+              applied={quote.coupon}
+              error={couponError}
+              onApply={(code) => {
+                setCouponError(null);
+                if (code === couponCode) reloadQuote();
+                else setCouponCode(code);
+              }}
+              onRemove={() => {
+                setCouponError(null);
+                setCouponCode(null);
+              }}
+            />
             <dl className="mt-5 space-y-2 border-t border-border pt-4 text-sm">
               <div className="flex justify-between">
                 <dt className="text-charcoal-soft">Subtotal</dt>
                 <dd>{formatPaise(quote.subtotalPaise)}</dd>
               </div>
+              {quote.discountPaise > 0 && (
+                <div className="flex justify-between text-success">
+                  <dt>Coupon {quote.coupon?.code}</dt>
+                  <dd>−{formatPaise(quote.discountPaise)}</dd>
+                </div>
+              )}
               <div className="flex justify-between">
                 <dt className="text-charcoal-soft">Shipping</dt>
                 <dd>{quote.shippingPaise ? formatPaise(quote.shippingPaise) : 'Free'}</dd>
@@ -261,6 +294,71 @@ function PaymentOption({ checked, disabled, onSelect, icon, title, text }: { che
         <span className="block text-xs text-charcoal-soft">{text}</span>
       </span>
     </label>
+  );
+}
+
+function CouponBox({
+  applied,
+  error,
+  onApply,
+  onRemove,
+}: {
+  applied: QuoteDto['coupon'];
+  error: string | null;
+  onApply: (code: string) => void;
+  onRemove: () => void;
+}) {
+  const [code, setCode] = useState('');
+  if (applied) {
+    const scope = applied.appliesTo.length === 0 ? 'sitewide' : `on ${applied.appliesTo.map((t) => `${t}s`).join(', ')}`;
+    return (
+      <div className="mt-5 flex items-center justify-between gap-3 rounded-md border border-dashed border-success/60 bg-success/10 px-3.5 py-2.5 text-sm">
+        <p className="flex items-center gap-2">
+          <TicketPercent className="size-4 text-success" aria-hidden />
+          <span>
+            <span className="font-mono font-semibold tracking-wider">{applied.code}</span> applied · {applied.discountPercent}% off {scope}
+          </span>
+        </p>
+        <button type="button" onClick={onRemove} className="text-xs font-semibold text-charcoal-soft underline underline-offset-4 hover:text-danger">
+          Remove
+        </button>
+      </div>
+    );
+  }
+  return (
+    <form
+      className="mt-5"
+      onSubmit={(e) => {
+        e.preventDefault();
+        const value = code.trim().toUpperCase();
+        if (value) onApply(value);
+      }}
+    >
+      <Label htmlFor="coupon-code" className="flex items-center gap-1.5">
+        <TicketPercent className="size-3.5 text-rose-deep" aria-hidden /> Have a coupon?
+      </Label>
+      <div className="flex gap-2">
+        <Input
+          id="coupon-code"
+          value={code}
+          onChange={(e) => setCode(e.target.value.toUpperCase())}
+          placeholder="Enter code"
+          maxLength={24}
+          autoComplete="off"
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? 'coupon-error' : undefined}
+          className="h-10 font-mono uppercase tracking-wider"
+        />
+        <Button type="submit" variant="outline" size="sm" className="h-10 shrink-0" disabled={!code.trim()}>
+          Apply
+        </Button>
+      </div>
+      {error && (
+        <p id="coupon-error" role="alert" className="mt-1.5 text-xs text-danger">
+          {error}
+        </p>
+      )}
+    </form>
   );
 }
 

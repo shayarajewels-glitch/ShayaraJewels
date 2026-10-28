@@ -1,6 +1,6 @@
 'use client';
 
-import { ExternalLink, LayoutDashboard, LogOut, Menu, MessageSquareText, Package, ShieldAlert, ShoppingCart, X } from 'lucide-react';
+import { ExternalLink, LayoutDashboard, LogOut, Menu, MessageSquareText, Package, ShieldAlert, ShoppingCart, TicketPercent, X } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -15,6 +15,7 @@ const NAV = [
   { href: '/admin/products', label: 'Products', icon: Package },
   { href: '/admin/orders', label: 'Orders', icon: ShoppingCart },
   { href: '/admin/reviews', label: 'Reviews', icon: MessageSquareText },
+  { href: '/admin/coupons', label: 'Coupons', icon: TicketPercent },
 ];
 
 /**

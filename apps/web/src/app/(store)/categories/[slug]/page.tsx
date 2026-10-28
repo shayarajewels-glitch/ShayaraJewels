@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { CATEGORIES, categoryBySlug } from '@shayara/shared';
 import { CatalogueListing, hasNonIndexableParams, type RawSearchParams } from '@/components/product/catalogue-listing';
 import { PageHeading } from '@/components/layout/page-heading';
+import { PromoCarousel } from '@/components/promo/promo-carousel';
 import { CATEGORY_SEO } from '@/lib/seo-copy';
 
 export function generateStaticParams() {
@@ -36,6 +37,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const firstPage = !(Number(sp.page) > 1);
   return (
     <div className="container-page py-10">
+      <PromoCarousel className="mb-8" />
       <PageHeading
         eyebrow={category.tagline}
         title={category.name}

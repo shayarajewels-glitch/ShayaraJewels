@@ -28,7 +28,8 @@ async function uploadToken(): Promise<string> {
   return res.token;
 }
 
-function useUploader(endpoint: UploadEndpoint, onDone: (files: { url: string; key: string; name: string }[]) => void) {
+/** Shared with other admin forms (e.g. coupon banners). */
+export function useUploader(endpoint: UploadEndpoint, onDone: (files: { url: string; key: string; name: string }[]) => void) {
   const [progress, setProgress] = useState(0);
   const { startUpload, isUploading } = useUploadThing(endpoint, {
     headers: async () => ({ Authorization: `Bearer ${await uploadToken()}` }),

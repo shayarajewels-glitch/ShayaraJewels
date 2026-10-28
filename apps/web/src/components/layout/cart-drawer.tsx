@@ -125,7 +125,7 @@ export function CartDrawer() {
                 <span>Subtotal</span>
                 <span className="font-semibold">{formatPaise(cart!.subtotalPaise)}</span>
               </div>
-              <p className="text-xs text-charcoal-soft">Shipping and any COD fee are calculated at checkout.</p>
+              <p className="text-xs text-charcoal-soft">Shipping, coupons and any COD fee are applied at checkout.</p>
               <Button asChild className="w-full" onClick={() => setDrawerOpen(false)}>
                 <Link href="/checkout">Checkout</Link>
               </Button>

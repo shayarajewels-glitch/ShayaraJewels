@@ -76,8 +76,16 @@ Base URL: `${API_BASE_URL}/api/v1`. All bodies are JSON. Money is integer **pais
 
 | Method | Path | Notes |
 | --- | --- | --- |
-| POST | `/quote` | `{ paymentMethod: 'razorpay'\|'cod' }` → lines, subtotal, shipping, `paymentFeePaise`, total, `codAvailable`, `onlinePaymentAvailable`, `issues` |
-| POST | `/` | Header **`Idempotency-Key`** (16–100 chars `[A-Za-z0-9_-]`). Body `{ addressId, paymentMethod, expectedTotalPaise?, notes? }` → `201 { order }`, or `200 { order, replayed: true }` for a repeated key. Errors: `CART_EMPTY`, `CART_INVALID`, `INSUFFICIENT_STOCK`, `PRICE_CHANGED`, `CHECKOUT_IN_PROGRESS`, `COD_UNAVAILABLE`, `PAYMENT_NOT_CONFIGURED` |
+| POST | `/quote` | `{ paymentMethod: 'razorpay'\|'cod', couponCode? }` → lines, subtotal, shipping, `paymentFeePaise`, `discountPaise`, total, `codAvailable`, `onlinePaymentAvailable`, `issues`, `coupon` (applied) or `couponError` (why the code was not applied; never an HTTP error) |
+| POST | `/` | Header **`Idempotency-Key`** (16–100 chars `[A-Za-z0-9_-]`). Body `{ addressId, paymentMethod, couponCode?, expectedTotalPaise?, notes? }` → `201 { order }`, or `200 { order, replayed: true }` for a repeated key. Errors: `CART_EMPTY`, `CART_INVALID`, `INSUFFICIENT_STOCK`, `PRICE_CHANGED`, `CHECKOUT_IN_PROGRESS`, `COD_UNAVAILABLE`, `PAYMENT_NOT_CONFIGURED`, `COUPON_INVALID`, `COUPON_NOT_STARTED`, `COUPON_EXPIRED`, `COUPON_NOT_APPLICABLE` |
+
+A coupon takes its percentage off only the lines whose product type it covers (every line for a sitewide coupon). Shipping is decided on the subtotal before the discount.
+
+## Coupons `/coupons` (public)
+
+| Method | Path | Notes |
+| --- | --- | --- |
+| GET | `/` | Live coupons (active and inside their dates) for the storefront carousel: `{ items: PublicCouponDto[] }` |
 
 ## Orders `/orders` (user; only the user's own orders, others return `404`)
 
@@ -114,6 +122,11 @@ Base URL: `${API_BASE_URL}/api/v1`. All bodies are JSON. Money is integer **pais
 | POST | `/orders/:id/refund` | `{ amountPaise?, reason, restock? }`. Before shipping it cancels and refunds in full; after delivery partial refunds are allowed. COD orders are refunded outside the gateway |
 | GET | `/reviews` | `?status` |
 | PATCH | `/reviews/:id` | `{ status: 'approved'\|'rejected', moderationNote? }`. Approval re-checks the qualifying order and recomputes ratings |
+| GET | `/coupons` | `{ items: CouponDto[] }` with `usageCount` (orders using the code, excluding cancelled) |
+| GET | `/coupons/:id` | `CouponDto` |
+| POST | `/coupons` | `couponInputSchema`: `{ code, title, description?, discountPercent (1–90), appliesTo (product types; empty = sitewide), image? { url, key?, alt }, active, startsAt?, endsAt?, sortOrder }`. `409 COUPON_CODE_TAKEN` for a duplicate code. Uploaded banners are kept out of the orphan-media cleanup |
+| PATCH | `/coupons/:id` | Full `couponInputSchema` body. A replaced banner file is deleted from UploadThing |
+| DELETE | `/coupons/:id` | `204`. Past orders keep their discount and code |
 | GET | `/uploads/config` | `{ enabled, maxImageSize, maxVideoSize, maxVideoSeconds }` |
 | POST | `/uploads/token` | `{ token, expiresAt }`: a 10-minute Bearer token for the UploadThing endpoint |
 

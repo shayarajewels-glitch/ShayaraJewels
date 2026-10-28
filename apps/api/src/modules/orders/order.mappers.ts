@@ -53,6 +53,7 @@ export function toOrderDto(order: Order, reviewedProductIds: string[] = []): Ord
     shippingPaise: order.shippingPaise,
     paymentFeePaise: order.paymentFeePaise,
     discountPaise: order.discountPaise,
+    couponCode: order.couponCode ?? null,
     totalPaise: order.totalPaise,
     refundedPaise: order.refundedPaise,
     paymentExpiresAt: iso(order.paymentExpiresAt) ?? null,

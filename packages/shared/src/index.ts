@@ -5,6 +5,7 @@ export * from './schemas/auth';
 export * from './schemas/address';
 export * from './schemas/product';
 export * from './schemas/commerce';
+export * from './schemas/coupon';
 export * from './types/api';
 export * from './utils/money';
 export * from './utils/slug';

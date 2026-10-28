@@ -7,6 +7,8 @@ import {
   adminRefundSchema,
   adminReviewModerationSchema,
   adminReviewQuerySchema,
+  couponInputSchema,
+  couponUpdateSchema,
   createProductSchema,
   objectIdSchema,
   stockUpdateSchema,
@@ -14,6 +16,7 @@ import {
 } from '@shayara/shared';
 import { currentUser, requireAdmin } from '../../middleware/security';
 import { parseBody, parseParams, parseQuery } from '../../utils/http';
+import { adminCreateCoupon, adminDeleteCoupon, adminGetCoupon, adminListCoupons, adminUpdateCoupon } from '../coupons/coupons.service';
 import { adminListReviews, moderateReview } from '../reviews/reviews.service';
 import { adminUploadsRouter } from '../uploads/uploads.routes';
 import { adminDashboard, adminGetOrder, adminListOrders, adminRefundOrder, adminUpdateOrderStatus } from './admin-orders.service';
@@ -87,6 +90,25 @@ adminRouter.patch('/reviews/:id', async (req, res) => {
   const { status, moderationNote } = parseBody(req, adminReviewModerationSchema);
   const review = await moderateReview(id, currentUser(req)._id, status, moderationNote);
   res.json({ id: review._id.toString(), status: review.status });
+});
+
+/* Coupons */
+adminRouter.get('/coupons', async (_req, res) => {
+  res.json({ items: await adminListCoupons() });
+});
+adminRouter.get('/coupons/:id', async (req, res) => {
+  res.json(await adminGetCoupon(parseParams(req, idParams).id));
+});
+adminRouter.post('/coupons', async (req, res) => {
+  res.status(201).json(await adminCreateCoupon(parseBody(req, couponInputSchema)));
+});
+adminRouter.patch('/coupons/:id', async (req, res) => {
+  const { id } = parseParams(req, idParams);
+  res.json(await adminUpdateCoupon(id, parseBody(req, couponUpdateSchema)));
+});
+adminRouter.delete('/coupons/:id', async (req, res) => {
+  await adminDeleteCoupon(parseParams(req, idParams).id);
+  res.status(204).end();
 });
 
 /* Uploads */

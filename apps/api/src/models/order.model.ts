@@ -72,6 +72,8 @@ export interface Order {
   tracking?: { carrier: string; trackingNumber: string; trackingUrl?: string; shippedAt?: Date } | null;
   timeline: TimelineEntry[];
   idempotencyKey: string;
+  /** Coupon applied at checkout; the amount is in discountPaise. */
+  couponCode?: string | null;
   notes?: string | null;
   /** Flag for administrators, e.g. a late payment that had to be refunded. */
   attention?: string | null;
@@ -129,6 +131,7 @@ const orderSchema = new Schema<Order>(
     shippingPaise: { type: Number, required: true, min: 0 },
     paymentFeePaise: { type: Number, required: true, min: 0, default: 0 },
     discountPaise: { type: Number, required: true, min: 0, default: 0 },
+    couponCode: { type: String, default: null, maxlength: 24 },
     totalPaise: { type: Number, required: true, min: 0 },
     paymentMethod: { type: String, enum: PAYMENT_METHODS, required: true },
     paymentStatus: { type: String, enum: PAYMENT_STATUSES, required: true, default: 'pending' },

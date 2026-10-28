@@ -47,7 +47,7 @@ export default function CartPage() {
               <span>Subtotal ({cart.itemCount} items)</span>
               <span className="font-semibold">{formatPaise(cart.subtotalPaise)}</span>
             </div>
-            <p className="text-xs text-charcoal-soft">Shipping, COD fee (if any) and the final total are confirmed at checkout.</p>
+            <p className="text-xs text-charcoal-soft">Have a coupon? Apply it at checkout, where shipping, COD fee (if any) and the final total are confirmed.</p>
             <Button asChild className="w-full" size="lg" aria-disabled={hasIssues}>
               <Link href={hasIssues ? '#' : '/checkout'} onClick={(e) => hasIssues && e.preventDefault()}>
                 Proceed to checkout

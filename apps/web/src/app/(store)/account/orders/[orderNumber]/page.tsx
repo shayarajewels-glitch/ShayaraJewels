@@ -150,7 +150,7 @@ function OrderDetail() {
               <Row label="Subtotal" value={formatPaise(order.subtotalPaise)} />
               <Row label="Shipping" value={order.shippingPaise ? formatPaise(order.shippingPaise) : 'Free'} />
               {order.paymentFeePaise > 0 && <Row label="COD fee" value={formatPaise(order.paymentFeePaise)} />}
-              {order.discountPaise > 0 && <Row label="Discount" value={`−${formatPaise(order.discountPaise)}`} />}
+              {order.discountPaise > 0 && <Row label={order.couponCode ? `Coupon ${order.couponCode}` : 'Discount'} value={`−${formatPaise(order.discountPaise)}`} />}
               <div className="flex justify-between border-t border-border pt-2 text-base font-semibold">
                 <dt>Total</dt>
                 <dd>{formatPaise(order.totalPaise)}</dd>

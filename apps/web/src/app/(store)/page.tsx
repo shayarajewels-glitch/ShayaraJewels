@@ -5,6 +5,7 @@ import { CATEGORIES } from '@shayara/shared';
 import { Price } from '@/components/product/price';
 import { ProductImage } from '@/components/product/product-image';
 import { ProductRail } from '@/components/product/product-rail';
+import { PromoCarousel } from '@/components/promo/promo-carousel';
 import { Button } from '@/components/ui/button';
 import { serverApi } from '@/lib/api-server';
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, SOCIAL_LINKS, STORE_ADDRESS, SUPPORT_EMAIL, SUPPORT_PHONE } from '@/lib/config';
@@ -84,6 +85,10 @@ export default async function HomePage() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(storeJsonLd)} />
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(websiteJsonLd)} />
+
+      <div className="container-page pt-6">
+        <PromoCarousel />
+      </div>
 
       {/* Hero */}
       <section className="bg-glow relative overflow-hidden">

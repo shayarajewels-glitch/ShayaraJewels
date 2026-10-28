@@ -68,7 +68,7 @@ export function OrderDetail({ id }: { id: string }) {
                   <Row label="Subtotal" value={formatPaise(order.subtotalPaise)} />
                   <Row label="Shipping" value={order.shippingPaise ? formatPaise(order.shippingPaise) : 'Free'} />
                   {order.paymentFeePaise > 0 && <Row label="COD fee" value={formatPaise(order.paymentFeePaise)} />}
-                  {order.discountPaise > 0 && <Row label="Discount" value={`−${formatPaise(order.discountPaise)}`} />}
+                  {order.discountPaise > 0 && <Row label={order.couponCode ? `Coupon ${order.couponCode}` : 'Discount'} value={`−${formatPaise(order.discountPaise)}`} />}
                   <Row label="Total" value={formatPaise(order.totalPaise)} strong />
                   {order.refundedPaise > 0 && <Row label="Refunded (processed)" value={`−${formatPaise(order.refundedPaise)}`} />}
                 </dl>

@@ -16,8 +16,8 @@ export function buildCheckoutRouter(limiters: RateLimiters): Router {
   });
 
   router.post('/quote', async (req, res) => {
-    const { paymentMethod } = parseBody(req, checkoutQuoteSchema);
-    const quote = await quoteForUser(currentUser(req)._id, paymentMethod);
+    const { paymentMethod, couponCode } = parseBody(req, checkoutQuoteSchema);
+    const quote = await quoteForUser(currentUser(req)._id, paymentMethod, couponCode);
     res.json({ ...quote, onlinePaymentAvailable: isOnlinePaymentConfigured() });
   });
 

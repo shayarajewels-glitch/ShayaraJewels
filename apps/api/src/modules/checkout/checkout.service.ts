@@ -16,6 +16,7 @@ import { getLogger } from '../../config/logger';
 import { AddressModel, CartModel, OrderModel, type Order, type User } from '../../models';
 import { AppError, badRequest, conflict } from '../../utils/errors';
 import { buildCartLines } from '../cart/cart.service';
+import { applyCoupon, type CouponApplication } from '../coupons/coupons.service';
 import { reserveStock, restoreStock, setSalesCounted } from '../orders/inventory.service';
 import { isOnlinePaymentConfigured } from '../payments/gateway';
 
@@ -37,12 +38,15 @@ interface Totals {
   totalPaise: number;
 }
 
-/** The single source of truth for order totals. */
-export function calculateTotals(lines: Pick<CartLineDto, 'lineTotalPaise'>[], method: PaymentMethod): Totals {
+/**
+ * The single source of truth for order totals. Shipping is based on the
+ * subtotal before any coupon, so a discount never takes away free shipping.
+ */
+export function calculateTotals(lines: Pick<CartLineDto, 'lineTotalPaise'>[], method: PaymentMethod, couponDiscountPaise = 0): Totals {
   const subtotalPaise = lines.reduce((sum, l) => sum + l.lineTotalPaise, 0);
   const shippingPaise = shippingForSubtotal(subtotalPaise);
   const paymentFeePaise = subtotalPaise > 0 ? paymentFeeFor(method) : 0;
-  const discountPaise = 0;
+  const discountPaise = Math.min(couponDiscountPaise, subtotalPaise);
   return {
     subtotalPaise,
     shippingPaise,
@@ -52,11 +56,22 @@ export function calculateTotals(lines: Pick<CartLineDto, 'lineTotalPaise'>[], me
   };
 }
 
-export async function quoteForUser(userId: Types.ObjectId, method: PaymentMethod): Promise<QuoteDto> {
+export async function quoteForUser(userId: Types.ObjectId, method: PaymentMethod, couponCode?: string): Promise<QuoteDto> {
   const cart = await CartModel.findOne({ userId }).lean();
   const lines = await buildCartLines(cart?.items ?? []);
   const purchasable = lines.filter((l) => !l.issue);
-  const totals = calculateTotals(purchasable, method);
+  // An invalid code never blocks the quote; the reason is returned for the coupon field instead.
+  let applied: CouponApplication | null = null;
+  let couponError: string | null = null;
+  if (couponCode && purchasable.length > 0) {
+    try {
+      applied = await applyCoupon(couponCode, purchasable);
+    } catch (err) {
+      if (!(err instanceof AppError)) throw err;
+      couponError = err.message;
+    }
+  }
+  const totals = calculateTotals(purchasable, method, applied?.discountPaise ?? 0);
   const issues = lines.filter((l) => l.issue).map((l) => `${l.name}: ${l.issue}`);
   if (lines.length === 0) issues.push('Your bag is empty');
   return {
@@ -65,6 +80,8 @@ export async function quoteForUser(userId: Types.ObjectId, method: PaymentMethod
     codAvailable: totals.totalPaise - totals.paymentFeePaise + paymentFeeFor('cod') <= COD_MAX_TOTAL_PAISE,
     issues,
     freeShippingThresholdPaise: FREE_SHIPPING_THRESHOLD_PAISE,
+    coupon: applied?.coupon ?? null,
+    couponError,
   };
 }
 
@@ -111,7 +128,9 @@ export async function placeOrder(user: User, input: CheckoutInput, idempotencyKe
       throw new AppError(409, 'CART_INVALID', 'Some items in your bag need attention', problems.map((l) => ({ path: l.productId, message: `${l.name}: ${l.issue}` })));
     }
 
-    const totals = calculateTotals(lines, input.paymentMethod);
+    // Re-validated here: the coupon may have expired since the customer saw the quote.
+    const applied = input.couponCode ? await applyCoupon(input.couponCode, lines) : null;
+    const totals = calculateTotals(lines, input.paymentMethod, applied?.discountPaise ?? 0);
     if (input.expectedTotalPaise !== undefined && input.expectedTotalPaise !== totals.totalPaise) {
       throw new AppError(409, 'PRICE_CHANGED', 'Prices or charges changed since you reviewed your order. Please review the updated total.');
     }
@@ -148,6 +167,7 @@ export async function placeOrder(user: User, input: CheckoutInput, idempotencyKe
         country: address.country,
       },
       ...totals,
+      couponCode: applied?.coupon.code ?? null,
       paymentMethod: input.paymentMethod,
       paymentStatus: 'pending' as const,
       codCollectionStatus: isCod ? ('pending' as const) : ('not_applicable' as const),

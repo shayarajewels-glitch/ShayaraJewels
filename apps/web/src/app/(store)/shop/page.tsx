@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { CatalogueListing, hasNonIndexableParams, type RawSearchParams } from '@/components/product/catalogue-listing';
 import { PageHeading } from '@/components/layout/page-heading';
+import { PromoCarousel } from '@/components/promo/promo-carousel';
 
 export async function generateMetadata({ searchParams }: { searchParams: Promise<RawSearchParams> }): Promise<Metadata> {
   const sp = await searchParams;
@@ -18,6 +19,7 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
   const sp = await searchParams;
   return (
     <div className="container-page py-10">
+      <PromoCarousel className="mb-8" />
       <PageHeading eyebrow="The collection" title="Shop all jewellery" crumbs={[{ href: '/', label: 'Home' }, { label: 'Shop' }]} />
       <CatalogueListing basePath="/shop" searchParams={sp} />
     </div>

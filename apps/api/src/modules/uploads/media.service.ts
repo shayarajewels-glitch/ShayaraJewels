@@ -2,7 +2,7 @@ import type { Types } from 'mongoose';
 import { UTApi } from 'uploadthing/server';
 import { getConfig } from '../../config/env';
 import { getLogger } from '../../config/logger';
-import { MediaAssetModel, ProductModel } from '../../models';
+import { CouponModel, MediaAssetModel, ProductModel } from '../../models';
 import { badRequest } from '../../utils/errors';
 
 /** Hosts that serve UploadThing files. Only these (or site-relative paths) may be stored as product media. */
@@ -81,8 +81,8 @@ export function setUtApi(next: UTApi | null | undefined): void {
 }
 
 /**
- * Deletes files from UploadThing unless another product still references
- * them. Failures are logged and retried by the orphan-media cleanup job.
+ * Deletes files from UploadThing unless another product or a coupon banner
+ * still references them. Failures are logged and retried by the orphan-media cleanup job.
  */
 export async function releaseMedia(keys: string[], exceptProductId?: Types.ObjectId): Promise<void> {
   if (keys.length === 0) return;
@@ -92,7 +92,8 @@ export async function releaseMedia(keys: string[], exceptProductId?: Types.Objec
   })
     .select('images.key videos.key videos.thumbnailKey')
     .lean();
-  const used = new Set(stillUsed.flatMap((p) => collectKeys(p as unknown as MediaRefs)));
+  const bannerUsers = await CouponModel.find({ 'image.key': { $in: keys } }).select('image.key').lean();
+  const used = new Set([...stillUsed.flatMap((p) => collectKeys(p as unknown as MediaRefs)), ...bannerUsers.map((c) => c.image!.key!)]);
   const deletable = keys.filter((k) => !used.has(k));
   if (deletable.length === 0) return;
 

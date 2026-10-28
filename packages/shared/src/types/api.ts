@@ -109,6 +109,8 @@ export interface CartLineDto {
   name: string;
   sku: string;
   finish: Finish;
+  /** Used to decide which lines a category coupon applies to. */
+  type: ProductType;
   image: ProductImageDto | null;
   size: string | null;
   quantity: number;
@@ -136,6 +138,46 @@ export interface QuoteDto {
   codAvailable: boolean;
   issues: string[];
   freeShippingThresholdPaise: number;
+  /** The coupon applied to this quote, if one was entered and is valid. */
+  coupon: AppliedCouponDto | null;
+  /** Why the entered coupon could not be applied. */
+  couponError: string | null;
+}
+
+export interface AppliedCouponDto {
+  code: string;
+  title: string;
+  discountPercent: number;
+  appliesTo: ProductType[];
+}
+
+/** Active coupon as shown in the storefront carousel. */
+export interface PublicCouponDto {
+  code: string;
+  title: string;
+  description: string;
+  discountPercent: number;
+  /** Empty means the whole store. */
+  appliesTo: ProductType[];
+  image: { url: string; alt: string } | null;
+  endsAt: string | null;
+}
+
+export interface CouponDto {
+  id: string;
+  code: string;
+  title: string;
+  description: string;
+  discountPercent: number;
+  appliesTo: ProductType[];
+  image: { url: string; key?: string; alt: string } | null;
+  active: boolean;
+  startsAt: string | null;
+  endsAt: string | null;
+  sortOrder: number;
+  /** Orders placed with this code (excluding cancelled ones). */
+  usageCount: number;
+  createdAt: string;
 }
 
 export interface OrderItemDto {
@@ -180,6 +222,7 @@ export interface OrderDto {
   shippingPaise: number;
   paymentFeePaise: number;
   discountPaise: number;
+  couponCode: string | null;
   totalPaise: number;
   refundedPaise: number;
   paymentExpiresAt: string | null;

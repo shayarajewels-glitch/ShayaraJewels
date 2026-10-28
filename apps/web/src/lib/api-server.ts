@@ -1,5 +1,5 @@
 import 'server-only';
-import type { CategoryDto, Paginated, ProductDetailDto, ProductSummaryDto, ReviewDto } from '@shayara/shared';
+import type { CategoryDto, Paginated, ProductDetailDto, ProductSummaryDto, PublicCouponDto, ReviewDto } from '@shayara/shared';
 import { PUBLIC_API_BASE_URL } from './config';
 
 /** The Next.js server may reach the API on a private address. */
@@ -51,4 +51,6 @@ export const serverApi = {
     getOr<Collection>(`/products/${name}?limit=${limit}`, { items: [], fallback: true }),
   categories: () => getOr<{ items: CategoryDto[] }>('/categories', { items: [] }, 300),
   sitemap: () => getOr<{ items: { slug: string; updatedAt: string }[] }>('/products/sitemap', { items: [] }, 600),
+  /** Live coupons for the promo carousel; an outage just shows the default slides. */
+  coupons: () => getOr<{ items: PublicCouponDto[] }>('/coupons', { items: [] }, 60),
 };

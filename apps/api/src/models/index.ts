@@ -10,3 +10,4 @@ export * from './review.model';
 export * from './webhook-event.model';
 export * from './media-asset.model';
 export * from './inventory-adjustment.model';
+export * from './coupon.model';

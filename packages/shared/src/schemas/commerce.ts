@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { MAX_QUANTITY_PER_ITEM, ORDER_STATUSES, PAYMENT_METHODS, PAYMENT_STATUSES, REVIEW_STATUSES } from '../constants/commerce';
 import { objectIdSchema, paginationSchema, paiseSchema } from './common';
+import { couponCodeSchema } from './coupon';
 
 /* ----------------------------------- Cart ---------------------------------- */
 
@@ -27,12 +28,14 @@ export const updateCartItemSchema = z.strictObject({
 export const checkoutQuoteSchema = z.strictObject({
   addressId: objectIdSchema.optional(),
   paymentMethod: z.enum(PAYMENT_METHODS).default('razorpay'),
+  couponCode: couponCodeSchema.optional(),
 });
 export type CheckoutQuoteInput = z.input<typeof checkoutQuoteSchema>;
 
 export const checkoutSchema = z.strictObject({
   addressId: objectIdSchema,
   paymentMethod: z.enum(PAYMENT_METHODS),
+  couponCode: couponCodeSchema.optional(),
   /** The quote total the customer saw; checkout fails if the server total differs. */
   expectedTotalPaise: paiseSchema.optional(),
   notes: z.string().trim().max(300).optional(),
