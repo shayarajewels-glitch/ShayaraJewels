@@ -1,6 +1,7 @@
 /**
  * Adds the sample catalogue (development / demo). Idempotent: products whose
- * SKU already exists are left untouched. Never deletes anything.
+ * SKU already exists are kept, except that their old SVG placeholder images
+ * are swapped for the sample photos. Never deletes anything.
  *
  *   npm run seed
  *
@@ -10,7 +11,7 @@ import { parseArgs } from 'node:util';
 import { connectDatabase, disconnectDatabase } from '../src/config/db';
 import { getConfig } from '../src/config/env';
 import { SEED_PRODUCTS } from './catalogue-data';
-import { seedCatalogue } from './seed-lib';
+import { replacePlaceholderImages, seedCatalogue } from './seed-lib';
 
 async function main() {
   const { values } = parseArgs({ options: { 'allow-production': { type: 'boolean', default: false } } });
@@ -21,7 +22,8 @@ async function main() {
   await connectDatabase(config.mongodbUri);
   try {
     const created = await seedCatalogue();
-    console.log(`Seed complete: ${created} product(s) added, ${SEED_PRODUCTS.length - created} already present.`);
+    const photos = await replacePlaceholderImages();
+    console.log(`Seed complete: ${created} product(s) added, ${SEED_PRODUCTS.length - created} already present, ${photos} switched to photos.`);
   } finally {
     await disconnectDatabase();
   }

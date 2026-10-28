@@ -1,3 +1,4 @@
+import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import type { ProductSummaryDto } from '@shayara/shared';
 import { ProductCard } from './product-card';
@@ -8,14 +9,25 @@ export function ProductRail({ eyebrow, title, href, products }: { eyebrow?: stri
     <section className="container-page py-14" aria-labelledby={`rail-${title}`}>
       <div className="mb-8 flex items-end justify-between gap-4">
         <div>
-          {eyebrow && <p className="eyebrow mb-2">{eyebrow}</p>}
-          <h2 id={`rail-${title}`} className="text-3xl sm:text-4xl">
+          {eyebrow && (
+            <p className="eyebrow mb-2 flex items-center gap-2 text-rose-deep">
+              <span className="text-champagne" aria-hidden>
+                ✦
+              </span>
+              {eyebrow}
+            </p>
+          )}
+          <h2 id={`rail-${title}`} className="text-3xl sm:text-5xl">
             {title}
           </h2>
         </div>
         {href && (
-          <Link href={href} className="eyebrow shrink-0 border-b border-champagne pb-1 hover:text-rose-deep">
+          <Link
+            href={href}
+            className="eyebrow group/all inline-flex shrink-0 items-center gap-2 rounded-full border border-charcoal/20 px-4 py-2.5 transition-colors hover:border-charcoal hover:bg-charcoal hover:text-ivory"
+          >
             View all
+            <ArrowRight className="size-3.5 transition-transform group-hover/all:translate-x-0.5" aria-hidden />
           </Link>
         )}
       </div>

@@ -25,7 +25,7 @@ test('filters and sorting live in the URL', async ({ page }) => {
 
 test('search finds products by keyword', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: 'Search' }).click();
+  // Desktop shows the search field in the header; smaller screens open it from the Search button.
   await page.getByRole('searchbox', { name: 'Search jewellery' }).fill('crescent');
   await page.keyboard.press('Enter');
   await expect(page).toHaveURL(/\/search\?q=crescent/);

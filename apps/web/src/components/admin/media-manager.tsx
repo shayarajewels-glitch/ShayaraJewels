@@ -112,7 +112,7 @@ export function MediaManager({ value, onChange, productName }: { value: MediaSta
 
   const addPath = () => {
     const path = pathInput.trim();
-    if (!/^\/[\w\-./]+$/.test(path)) return toast.error('Enter a site path like /images/products/my-ring.svg');
+    if (!/^\/[\w\-./]+$/.test(path)) return toast.error('Enter a site path like /images/products/my-ring.jpg');
     if (images.length >= MAX_IMAGES) return toast.error(`A product can have at most ${MAX_IMAGES} images`);
     setImages([...images, { url: path, alt: `${productName || 'Product'} photo`, sortOrder: images.length }]);
     setPathInput('');
@@ -199,7 +199,7 @@ export function MediaManager({ value, onChange, productName }: { value: MediaSta
             <Label htmlFor="image-path" className="text-xs">
               Add image by site path
             </Label>
-            <Input id="image-path" placeholder="/images/products/rng-mira-g-1.svg" value={pathInput} onChange={(e) => setPathInput(e.target.value)} className="h-9" />
+            <Input id="image-path" placeholder="/images/products/rng-mira-g-1.jpg" value={pathInput} onChange={(e) => setPathInput(e.target.value)} className="h-9" />
           </div>
           <Button type="button" size="sm" variant="outline" onClick={addPath}>
             <ImagePlus /> Add

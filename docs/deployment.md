@@ -117,7 +117,9 @@ Set `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS` and `MAIL_
 - [ ] Real product photography, descriptions, base materials, prices and stock entered. Placeholder SVGs replaced.
 
 **Legal and business**
-- [ ] `SUPPORT_EMAIL` in `apps/web/src/lib/config.ts` replaced, and business address and grievance officer details added to the contact page.
+- [x] `SUPPORT_EMAIL` in `apps/web/src/lib/config.ts` set to the store's inbox (shayarajewels@gmail.com).
+- [x] Business address (`STORE_ADDRESS` in `apps/web/src/lib/config.ts`) shown on the contact page and footer.
+- [ ] Grievance officer name and contact added to the contact page.
 - [ ] Legal pages (terms, privacy, shipping, returns) reviewed by a legal adviser for your business. Shipping charges and the COD limit and fee in `packages/shared/src/constants/commerce.ts` match your courier contracts. GST invoicing arranged if applicable.
 
 **Final checks**

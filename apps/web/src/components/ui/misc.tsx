@@ -7,10 +7,10 @@ const badgeVariants = cva('inline-flex items-center gap-1 rounded-full px-2.5 py
     variant: {
       default: 'bg-charcoal text-ivory',
       rose: 'bg-rose-soft text-rose-deep',
-      gold: 'bg-champagne-soft text-[#6f5320]',
+      gold: 'bg-champagne-soft text-champagne',
       muted: 'bg-ivory-deep text-charcoal-soft',
-      success: 'bg-[#e3efe7] text-success',
-      danger: 'bg-[#f6e1df] text-danger',
+      success: 'bg-success/15 text-success',
+      danger: 'bg-danger/15 text-danger',
       outline: 'border border-border text-charcoal-soft',
     },
   },
@@ -46,9 +46,9 @@ export function Alert({
 }) {
   const styles = {
     info: 'border-sand bg-ivory-deep text-charcoal',
-    error: 'border-[#e8c2be] bg-[#fbeeec] text-danger',
-    success: 'border-[#c4dccd] bg-[#eef6f1] text-success',
-    warning: 'border-champagne-soft bg-[#fbf4e4] text-[#6f5320]',
+    error: 'border-danger/40 bg-danger/10 text-danger',
+    success: 'border-success/40 bg-success/10 text-success',
+    warning: 'border-champagne/40 bg-champagne/10 text-champagne',
   }[variant];
   return (
     <div role={variant === 'error' ? 'alert' : 'status'} className={cn('rounded-sm border px-4 py-3 text-sm', styles, className)}>

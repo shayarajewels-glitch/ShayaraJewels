@@ -8,9 +8,10 @@ export const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-charcoal text-ivory hover:bg-black',
-        rose: 'bg-rose-deep text-white hover:bg-[#7d424c]',
-        outline: 'border border-charcoal/80 bg-transparent text-charcoal hover:bg-charcoal hover:text-ivory',
+        default:
+          'bg-gradient-to-b from-[#f3d77a] via-rose-deep to-[#b8901f] text-ivory shadow-[0_8px_24px_-10px_rgba(212,175,55,0.6)] hover:from-[#fbe8a6] hover:via-[#e6c35c] hover:to-rose-deep',
+        rose: 'bg-rose-deep text-ivory hover:bg-rose',
+        outline: 'border border-rose-deep/70 bg-transparent text-rose-deep hover:bg-rose-deep hover:text-ivory',
         subtle: 'bg-ivory-deep text-charcoal hover:bg-sand',
         ghost: 'text-charcoal hover:bg-ivory-deep',
         link: 'h-auto px-0 normal-case tracking-normal text-rose-deep underline-offset-4 hover:underline',

@@ -15,7 +15,7 @@ export function ProductPreview({ id }: { id: string }) {
   if (loading || !data) return <Skeleton className="h-[32rem]" />;
   return (
     <div>
-      <div className="mb-8 flex flex-wrap items-center justify-between gap-3 rounded-sm border border-champagne-soft bg-[#fbf4e4] px-4 py-3 text-sm text-[#6f5320]" role="status">
+      <div className="mb-8 flex flex-wrap items-center justify-between gap-3 rounded-sm border border-champagne/40 bg-champagne/10 px-4 py-3 text-sm text-champagne" role="status">
         <p>
           Preview — status: <strong className="capitalize">{data.status}</strong>
           {data.status !== 'published' && '. Customers cannot see this product yet.'}

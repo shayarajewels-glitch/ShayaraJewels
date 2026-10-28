@@ -22,13 +22,14 @@ export function Logo({
 }) {
   const mark = (
     <span className={cn('inline-flex items-center gap-2.5', className)}>
+      {/* Black-and-gold rendering of the designer "S" (the original beige version is shayara-mark.png). */}
       <Image
-        src="/brand/shayara-mark.png"
+        src="/brand/shayara-mark-noir.png"
         alt={variant === 'mark' ? 'Shayara' : ''}
         width={48}
         height={48}
         priority
-        className="size-10 rounded-md shadow-[0_1px_3px_rgba(90,70,50,0.18)] sm:size-11"
+        className="size-10 rounded-md ring-1 ring-rose-deep/50 shadow-[0_0_14px_-4px_rgba(212,175,55,0.55)] sm:size-11"
       />
       {variant === 'full' && (
         <span className={cn('flex-col items-start leading-none', responsive ? 'hidden sm:flex' : 'flex', tone === 'light' ? 'text-ivory' : 'text-charcoal')}>

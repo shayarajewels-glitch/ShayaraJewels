@@ -3,7 +3,7 @@
 import { Heart, Menu, Search, ShoppingBag, User } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { CATEGORIES } from '@shayara/shared';
 import { Logo } from '@/components/brand/logo';
 import { useHydrated } from '@/hooks/use-hydrated';
@@ -22,6 +22,7 @@ const NAV = [
 function SearchForm({ onDone, autoFocus }: { onDone?: () => void; autoFocus?: boolean }) {
   const router = useRouter();
   const [q, setQ] = useState('');
+  const id = useId();
   return (
     <form
       role="search"
@@ -33,11 +34,11 @@ function SearchForm({ onDone, autoFocus }: { onDone?: () => void; autoFocus?: bo
       }}
       className="relative w-full"
     >
-      <label htmlFor="site-search" className="sr-only">
+      <label htmlFor={id} className="sr-only">
         Search jewellery
       </label>
       <input
-        id="site-search"
+        id={id}
         type="search"
         value={q}
         autoFocus={autoFocus}
@@ -113,29 +114,15 @@ export function Header() {
               </nav>
             </SheetContent>
           </Sheet>
-          <nav aria-label="Primary" className="hidden lg:block">
-            <ul className="flex items-center gap-6">
-              {NAV.map((n) => (
-                <li key={n.href}>
-                  <Link
-                    href={n.href}
-                    className={cn(
-                      'eyebrow whitespace-nowrap py-2 transition-colors hover:text-rose-deep',
-                      pathname.startsWith(n.href) && 'text-charcoal underline decoration-champagne decoration-2 underline-offset-[10px]',
-                    )}
-                  >
-                    {n.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
+          <div className="hidden w-full max-w-xs lg:block">
+            <SearchForm />
+          </div>
         </div>
 
         <Logo responsive />
 
         <div className="flex items-center justify-end gap-0.5 sm:gap-1">
-          <button type="button" onClick={() => setSearchOpen((v) => !v)} className="rounded-sm p-2 hover:bg-ivory-deep" aria-label="Search" aria-expanded={searchOpen}>
+          <button type="button" onClick={() => setSearchOpen((v) => !v)} className="rounded-sm p-2 hover:bg-ivory-deep lg:hidden" aria-label="Search" aria-expanded={searchOpen}>
             <Search className="size-5" />
           </button>
           <Link href={user ? '/account/profile' : '/login'} className="hidden rounded-sm p-2 hover:bg-ivory-deep sm:inline-flex" aria-label={user ? 'My account' : 'Log in'}>
@@ -148,13 +135,35 @@ export function Header() {
           <button type="button" onClick={() => setDrawerOpen(true)} className="relative rounded-sm p-2 hover:bg-ivory-deep" aria-label={`Bag, ${count} item${count === 1 ? '' : 's'}`}>
             <ShoppingBag className="size-5" />
             {count > 0 && (
-              <span className="absolute -right-0.5 -top-0.5 flex min-w-5 items-center justify-center rounded-full bg-rose-deep px-1 text-[0.65rem] font-bold leading-5 text-white" aria-hidden>
+              <span className="absolute -right-0.5 -top-0.5 flex min-w-5 items-center justify-center rounded-full bg-rose-deep px-1 text-[0.65rem] font-bold leading-5 text-ivory" aria-hidden>
                 {count}
               </span>
             )}
           </button>
         </div>
       </div>
+      <nav aria-label="Primary" className="hidden border-t border-border/70 lg:block">
+        <ul className="container-page flex h-12 items-center justify-center gap-10">
+          {NAV.map((n) => {
+            const active = pathname.startsWith(n.href);
+            return (
+              <li key={n.href}>
+                <Link
+                  href={n.href}
+                  aria-current={active ? 'page' : undefined}
+                  className={cn(
+                    'eyebrow relative whitespace-nowrap py-3 transition-colors hover:text-rose-deep',
+                    'after:absolute after:inset-x-0 after:-bottom-px after:h-0.5 after:origin-center after:scale-x-0 after:bg-champagne after:transition-transform hover:after:scale-x-100',
+                    active && 'text-charcoal after:scale-x-100',
+                  )}
+                >
+                  {n.label}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
       {searchOpen && (
         <div className="border-t border-border bg-ivory py-3">
           <div className="container-page max-w-2xl">

@@ -51,7 +51,7 @@ export function ProductGallery({ images, videos, productName }: { images: Produc
                 ) : (
                   <>
                     {s.video.thumbnailUrl && <ProductImage src={s.video.thumbnailUrl} alt="" fill sizes="80px" />}
-                    <span className="absolute inset-0 flex items-center justify-center bg-charcoal/30 text-white">
+                    <span className="absolute inset-0 flex items-center justify-center bg-black/40 text-white">
                       <Play className="size-5 fill-white" />
                     </span>
                   </>
@@ -109,7 +109,7 @@ export function ProductGallery({ images, videos, productName }: { images: Produc
 
       <DialogPrimitive.Root open={viewerOpen} onOpenChange={setViewerOpen}>
         <DialogPrimitive.Portal>
-          <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-charcoal/95" />
+          <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/95" />
           <DialogPrimitive.Content className="fixed inset-0 z-50 flex items-center justify-center p-4" aria-describedby={undefined}>
             <DialogPrimitive.Title className="sr-only">{productName} photo viewer</DialogPrimitive.Title>
             {current.kind === 'image' && (

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { FINISH_LABELS, type ProductSummaryDto } from '@shayara/shared';
+import { discountPercent, FINISH_LABELS, type ProductSummaryDto } from '@shayara/shared';
 import { Badge } from '@/components/ui/misc';
 import { cn } from '@/lib/utils';
 import { Price, RatingStars } from './price';
@@ -7,9 +7,10 @@ import { ProductImage } from './product-image';
 import { WishlistButton } from './wishlist-button';
 
 export function ProductCard({ product, priority = false, className }: { product: ProductSummaryDto; priority?: boolean; className?: string }) {
+  const off = discountPercent(product.pricePaise, product.compareAtPricePaise);
   return (
     <article className={cn('group relative flex flex-col', className)}>
-      <div className="relative aspect-[4/5] overflow-hidden rounded-sm bg-ivory-deep">
+      <div className="relative aspect-[4/5] overflow-hidden rounded-xl bg-ivory-deep ring-1 ring-border/60 transition-shadow duration-500 group-hover:shadow-[0_18px_40px_-18px_rgba(90,60,40,0.35)]">
         {product.image ? (
           <>
             <ProductImage
@@ -35,11 +36,18 @@ export function ProductCard({ product, priority = false, className }: { product:
         )}
         <div className="absolute left-2.5 top-2.5 flex flex-col gap-1.5">
           {!product.inStock && <Badge variant="muted">Sold out</Badge>}
+          {product.inStock && off !== null && <Badge className="bg-rose-deep text-ivory">{off}% off</Badge>}
           {product.inStock && product.stockLeft !== null && <Badge variant="rose">Only {product.stockLeft} left</Badge>}
         </div>
         <WishlistButton product={product} className="absolute right-2 top-2" />
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-x-3 bottom-3 hidden translate-y-3 rounded-full bg-rose-deep/90 py-2.5 text-center text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-ivory opacity-0 backdrop-blur transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 md:block"
+        >
+          View piece
+        </span>
       </div>
-      <div className="mt-3 flex flex-1 flex-col gap-1">
+      <div className="mt-3.5 flex flex-1 flex-col gap-1 px-0.5">
         <p className="eyebrow text-[0.62rem]">{FINISH_LABELS[product.finish]}</p>
         <h3 className="font-display text-lg leading-snug">
           <Link href={`/products/${product.slug}`} className="after:absolute after:inset-0 hover:text-rose-deep focus-visible:outline-none focus-visible:after:outline-2 focus-visible:after:outline-ring">

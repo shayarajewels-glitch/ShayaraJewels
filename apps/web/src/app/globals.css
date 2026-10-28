@@ -3,32 +3,36 @@
 
 /* -------------------------------------------------------------------------- */
 /* Shayara design tokens                                                       */
-/* Warm ivory, muted rose, champagne gold, charcoal. All text pairs meet WCAG  */
-/* AA contrast on their intended backgrounds.                                  */
+/* Black and shiny gold. Token names are roles, not colours:                  */
+/*   ivory = page background (near-black)   charcoal = text (warm off-white)  */
+/*   rose  = brand accent (bright gold)     champagne = secondary gold        */
+/* So `text-ivory` on a gold surface is black text. All text pairs meet WCAG  */
+/* AA contrast on their intended backgrounds.                                 */
 /* -------------------------------------------------------------------------- */
 
 :root {
-  --ivory: #fbf7f1;
-  --ivory-deep: #f3ebe0;
-  --sand: #e8dccb;
-  --rose: #b76e79;
-  --rose-deep: #94505b; /* AA on ivory for text and buttons */
-  --rose-soft: #f2e1e1;
-  --champagne: #c9a45c;
-  --champagne-soft: #efe2c4;
-  --charcoal: #2b2725;
-  --charcoal-soft: #5e5651; /* AA on ivory for secondary text */
-  --success: #2f6f4e;
-  --danger: #a3312b;
+  color-scheme: dark;
+  --ivory: #0b0906;
+  --ivory-deep: #15110b;
+  --sand: #2a2216;
+  --rose: #e6c35c;
+  --rose-deep: #d4af37; /* metallic gold; 9:1 on the background */
+  --rose-soft: #241d0f;
+  --champagne: #e8c766;
+  --champagne-soft: #2b2414;
+  --charcoal: #f4ede0;
+  --charcoal-soft: #b3a792; /* AA on the background for secondary text */
+  --success: #5cbf8a;
+  --danger: #ef7a70;
 
   --background: var(--ivory);
   --foreground: var(--charcoal);
-  --card: #fffdf9;
+  --card: #13100b;
   --card-foreground: var(--charcoal);
-  --popover: #fffdf9;
+  --popover: #17130d;
   --popover-foreground: var(--charcoal);
-  --primary: var(--charcoal);
-  --primary-foreground: var(--ivory);
+  --primary: var(--rose-deep);
+  --primary-foreground: #0b0906;
   --secondary: var(--ivory-deep);
   --secondary-foreground: var(--charcoal);
   --muted: var(--ivory-deep);
@@ -36,8 +40,8 @@
   --accent: var(--rose-soft);
   --accent-foreground: var(--rose-deep);
   --destructive: var(--danger);
-  --border: #e4d8c8;
-  --input: #d9cbb8;
+  --border: #2c2519;
+  --input: #3d3323;
   --ring: var(--rose-deep);
   --radius: 0.375rem;
 }
@@ -148,6 +152,49 @@
   }
   .prose-shayara strong {
     @apply text-charcoal font-semibold;
+  }
+
+  /* Soft layered glow used behind hero and section backdrops. */
+  .bg-glow {
+    background:
+      radial-gradient(60% 70% at 85% 15%, rgb(212 175 55 / 0.16), transparent 70%),
+      radial-gradient(50% 60% at 10% 95%, rgb(230 195 92 / 0.09), transparent 70%),
+      #0e0b07;
+  }
+  /* Polished-gold gradient text for display accents. */
+  .text-gilded {
+    background: linear-gradient(100deg, #b8860b 0%, #f3d77a 35%, #d4af37 60%, #fbe8a6 80%, #c9a227 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  /* Arched frame, echoing jewellery-box and temple-window shapes. */
+  .arch {
+    border-radius: 999px 999px 0.5rem 0.5rem;
+  }
+  /* Thin ornamental divider: line · diamond · line. */
+  .ornament {
+    @apply flex items-center gap-3 text-champagne;
+  }
+  .ornament::before,
+  .ornament::after {
+    content: '';
+    @apply h-px flex-1 bg-gradient-to-r from-transparent via-champagne/60 to-transparent;
+  }
+  .marquee-track {
+    animation: marquee 40s linear infinite;
+  }
+  .marquee:hover .marquee-track {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
   }
 }
 

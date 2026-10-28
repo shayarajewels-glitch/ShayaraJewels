@@ -37,11 +37,21 @@ export function Breadcrumbs({ crumbs }: { crumbs: Crumb[] }) {
 
 export function PageHeading({ eyebrow, title, description, crumbs }: { eyebrow?: string; title: string; description?: string; crumbs?: Crumb[] }) {
   return (
-    <div className="mb-10">
-      {crumbs && <Breadcrumbs crumbs={crumbs} />}
-      {eyebrow && <p className="eyebrow mb-2">{eyebrow}</p>}
-      <h1 className="text-4xl sm:text-5xl">{title}</h1>
-      {description && <p className="mt-3 max-w-2xl text-sm leading-6 text-charcoal-soft">{description}</p>}
+    <div className="bg-glow relative mb-10 overflow-hidden rounded-3xl px-6 py-9 ring-1 ring-border/60 sm:px-10 sm:py-12">
+      <div aria-hidden className="pointer-events-none absolute -right-16 -top-24 size-72 rounded-full border border-champagne/30" />
+      <div className="relative">
+        {crumbs && <Breadcrumbs crumbs={crumbs} />}
+        {eyebrow && (
+          <p className="eyebrow mb-2 flex items-center gap-2 text-rose-deep">
+            <span className="text-champagne" aria-hidden>
+              ✦
+            </span>
+            {eyebrow}
+          </p>
+        )}
+        <h1 className="text-4xl sm:text-6xl">{title}</h1>
+        {description && <p className="mt-3 max-w-2xl text-sm leading-6 text-charcoal-soft">{description}</p>}
+      </div>
     </div>
   );
 }

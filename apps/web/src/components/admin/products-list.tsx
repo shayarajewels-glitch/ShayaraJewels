@@ -147,7 +147,7 @@ export function ProductsList() {
                     <ProductStatusBadge status={p.status} />
                   </td>
                   <td className="text-right">{formatPaise(p.pricePaise)}</td>
-                  <td className={`text-right ${p.stock === 0 ? 'font-semibold text-danger' : p.stock <= 5 ? 'font-semibold text-[#6f5320]' : ''}`}>{p.stock}</td>
+                  <td className={`text-right ${p.stock === 0 ? 'font-semibold text-danger' : p.stock <= 5 ? 'font-semibold text-champagne' : ''}`}>{p.stock}</td>
                   <td className="text-right">{p.unitsSold}</td>
                   <td>
                     <div className="flex items-center justify-end gap-1">

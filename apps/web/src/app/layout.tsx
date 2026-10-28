@@ -26,7 +26,8 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en-IN" className={`${cormorant.variable} ${manrope.variable}`}>
-      <body className="min-h-dvh">
+      {/* Extensions such as ColorZilla add attributes to <body> before hydration. */}
+      <body className="min-h-dvh" suppressHydrationWarning>
         {children}
         <Toaster position="bottom-center" toastOptions={{ classNames: { toast: '!bg-charcoal !text-ivory !border-0 !rounded-sm', description: '!text-ivory/80' } }} />
       </body>
