@@ -21,7 +21,7 @@ export const SUPPORT_EMAIL = 'shayarajewels@gmail.com';
  * search engines. Set to null when taking real orders on a fresh database.
  */
 export const DEMO_NOTICE: string | null =
-  'Shayara is a student project demo store: payments run in test mode, orders are not fulfilled and some reviews are sample content.';
+  '';
 
 /** Displayed form and the E.164 form used for tel: and WhatsApp links. */
 export const SUPPORT_PHONE = { display: '+91 70111 67970', e164: '+917011167970' } as const;

@@ -250,10 +250,10 @@ export function ProductForm({ product: initial }: { product?: AdminProductDto })
           <Field id="searchKeywords" label="Search keywords" error={errors.searchKeywords?.message} hint="Comma separated words shoppers might search for.">
             <Input {...register('searchKeywords')} />
           </Field>
-          <Field id="seoTitle" label="SEO title" error={errors.seoTitle?.message} hint={`${seoTitle.length}/70 characters. Defaults to the product name.`}>
+          <Field id="seoTitle" label="SEO title" error={errors.seoTitle?.message} hint={`${seoTitle.length}/70 characters (about 60 shows on Google). Leave empty for an automatic title like “Name – Gold Tone Ring for Women”.`}>
             <Input {...register('seoTitle')} maxLength={70} />
           </Field>
-          <Field id="seoDescription" label="SEO description" error={errors.seoDescription?.message} hint={`${seoDescription.length}/170 characters. Defaults to the description.`}>
+          <Field id="seoDescription" label="SEO description" error={errors.seoDescription?.message} hint={`${seoDescription.length}/170 characters (about 160 shows on Google). Leave empty to use the description plus “Free shipping over ₹999, COD available.”`}>
             <Textarea {...register('seoDescription')} maxLength={170} rows={3} />
           </Field>
         </Card>
