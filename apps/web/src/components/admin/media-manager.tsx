@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input, Label, NativeSelect } from '@/components/ui/form-controls';
 import { Alert, Card } from '@/components/ui/misc';
 import { api, errorMessage } from '@/lib/api-client';
+import { isImageSource } from '@/lib/utils';
 import { IMAGE_TYPES, VIDEO_TYPES, sizeToBytes, useUploadThing, videoDuration, type UploadConfig, type UploadEndpoint } from '@/lib/uploadthing';
 
 const MAX_IMAGES = 12;
@@ -35,8 +36,16 @@ export function useUploader(endpoint: UploadEndpoint, onDone: (files: { url: str
     headers: async () => ({ Authorization: `Bearer ${await uploadToken()}` }),
     uploadProgressGranularity: 'fine',
     onUploadProgress: (p) => setProgress(p),
-    onClientUploadComplete: (res) => {
+    onClientUploadComplete: async (res) => {
       setProgress(0);
+      if (res.length === 0) return;
+      try {
+        // Make sure the API tracks the files even if UploadThing's server callback was missed.
+        await api('/admin/uploads/confirm', { method: 'POST', body: { kind: endpoint === 'productVideo' ? 'video' : 'image', keys: res.map((f) => f.key) } });
+      } catch (err) {
+        toast.error(errorMessage(err));
+        return;
+      }
       onDone(res.map((f) => ({ url: f.ufsUrl, key: f.key, name: f.name })));
     },
     onUploadError: (err) => {
@@ -113,7 +122,7 @@ export function MediaManager({ value, onChange, productName }: { value: MediaSta
 
   const addPath = () => {
     const path = pathInput.trim();
-    if (!/^\/[\w\-./]+$/.test(path)) return toast.error('Enter a site path like /images/products/my-ring.jpg');
+    if (!isImageSource(path)) return toast.error('Enter an https image link, or a site path like /images/products/my-ring.jpg');
     if (images.length >= MAX_IMAGES) return toast.error(`A product can have at most ${MAX_IMAGES} images`);
     setImages([...images, { url: path, alt: `${productName || 'Product'} photo`, sortOrder: images.length }]);
     setPathInput('');
@@ -198,9 +207,22 @@ export function MediaManager({ value, onChange, productName }: { value: MediaSta
         <div className="mt-3 flex items-end gap-2">
           <div className="flex-1">
             <Label htmlFor="image-path" className="text-xs">
-              Add image by site path
+              Add image by link or site path
             </Label>
-            <Input id="image-path" placeholder="/images/products/rng-mira-g-1.jpg" value={pathInput} onChange={(e) => setPathInput(e.target.value)} className="h-9" />
+            <Input
+              id="image-path"
+              placeholder="https://example.com/photo.jpg or /images/products/rng-mira-g-1.jpg"
+              value={pathInput}
+              onChange={(e) => setPathInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  addPath();
+                }
+              }}
+              className="h-9"
+            />
+            <p className="mt-1 text-[0.7rem] text-charcoal-soft">Use a direct image link (it should open just the picture and usually end in .jpg, .png or .webp).</p>
           </div>
           <Button type="button" size="sm" variant="outline" onClick={addPath}>
             <ImagePlus /> Add

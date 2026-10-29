@@ -167,8 +167,8 @@ export function ProductForm({ product: initial }: { product?: AdminProductDto })
   };
 
   return (
-    <div className="grid gap-8 xl:grid-cols-[1fr_20rem]">
-      <form id="product-form" onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-8">
+    <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_20rem]">
+      <form id="product-form" onSubmit={handleSubmit(onSubmit)} noValidate className="min-w-0 space-y-8">
         {formError && <Alert variant="error">{formError}</Alert>}
 
         <Card className="space-y-5 p-6">
@@ -259,7 +259,7 @@ export function ProductForm({ product: initial }: { product?: AdminProductDto })
         </Card>
       </form>
 
-      <div className="space-y-6 xl:sticky xl:top-8 xl:self-start">
+      <div className="min-w-0 space-y-6 xl:sticky xl:top-8 xl:self-start">
         <Card className="space-y-4 p-5">
           <Field id="status" label="Status" error={errors.status?.message} hint="Only published products appear in the store.">
             <NativeSelect {...register('status')} form="product-form" className="capitalize">

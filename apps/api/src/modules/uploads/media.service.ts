@@ -5,10 +5,14 @@ import { getLogger } from '../../config/logger';
 import { CouponModel, MediaAssetModel, ProductModel } from '../../models';
 import { badRequest } from '../../utils/errors';
 
-/** Hosts that serve UploadThing files. Only these (or site-relative paths) may be stored as product media. */
+/** Hosts that serve UploadThing files. Videos (and any file with a key) must come from these. */
 const ALLOWED_MEDIA_HOSTS = [/^utfs\.io$/, /^[a-z0-9]+\.ufs\.sh$/i];
 
-export function assertAllowedMediaUrl(url: string, field: string): void {
+/**
+ * Site paths and UploadThing links are always allowed. With `anyHost`, an image
+ * may also be a direct https link hosted elsewhere (pasted by an admin).
+ */
+export function assertAllowedMediaUrl(url: string, field: string, { anyHost = false } = {}): void {
   if (url.startsWith('/')) return;
   let host: string;
   try {
@@ -18,7 +22,7 @@ export function assertAllowedMediaUrl(url: string, field: string): void {
   } catch {
     throw badRequest('Media URLs must be https links to uploaded files', 'INVALID_MEDIA', [{ path: field, message: 'Invalid media URL' }]);
   }
-  if (!ALLOWED_MEDIA_HOSTS.some((re) => re.test(host))) {
+  if (!anyHost && !ALLOWED_MEDIA_HOSTS.some((re) => re.test(host))) {
     throw badRequest('Media must be uploaded through the admin uploader', 'INVALID_MEDIA', [
       { path: field, message: `Host ${host} is not an allowed media host` },
     ]);
@@ -39,7 +43,7 @@ export function collectKeys(media: MediaRefs): string[] {
 }
 
 export function validateMediaUrls(media: Partial<MediaRefs>): void {
-  media.images?.forEach((img, i) => assertAllowedMediaUrl(img.url, `images.${i}.url`));
+  media.images?.forEach((img, i) => assertAllowedMediaUrl(img.url, `images.${i}.url`, { anyHost: !img.key }));
   media.videos?.forEach((v, i) => {
     assertAllowedMediaUrl(v.url, `videos.${i}.url`);
     if (v.thumbnailUrl) assertAllowedMediaUrl(v.thumbnailUrl, `videos.${i}.thumbnailUrl`);
@@ -73,6 +77,38 @@ function getUtApi(): UTApi | null {
     utapi = token ? new UTApi({ token }) : null;
   }
   return utapi;
+}
+
+/**
+ * Records uploads the admin's browser reports as finished. UploadThing's own
+ * callback normally records them first; this covers callbacks that never reach
+ * the API (wrong API_BASE_URL, cold start). Keys are checked with UploadThing,
+ * and the stored URL is the one UploadThing returns.
+ */
+export async function confirmUploads(keys: string[], kind: 'image' | 'video', userId: Types.ObjectId): Promise<void> {
+  const known = await MediaAssetModel.find({ key: { $in: keys } }).select('key').lean();
+  const unknown = keys.filter((k) => !known.some((a) => a.key === k));
+  if (unknown.length === 0) return;
+  const api = getUtApi();
+  if (!api) throw badRequest('Media uploads are not configured on the server', 'UPLOADS_NOT_CONFIGURED');
+  let found: readonly { key: string; url: string }[];
+  try {
+    found = (await api.getFileUrls(unknown)).data;
+  } catch (err) {
+    getLogger().error({ err: err instanceof Error ? err.message : String(err) }, 'UploadThing file lookup failed');
+    throw badRequest('Could not confirm the upload with UploadThing. Please try again.', 'INVALID_MEDIA');
+  }
+  const missing = unknown.filter((k) => !found.some((f) => f.key === k));
+  if (missing.length) throw badRequest('Some uploads were not found on UploadThing. Please upload them again.', 'INVALID_MEDIA');
+  await MediaAssetModel.bulkWrite(
+    found.map((f) => ({
+      updateOne: {
+        filter: { key: f.key },
+        update: { $setOnInsert: { key: f.key, url: f.url, kind, uploadedBy: userId, status: 'pending' as const } },
+        upsert: true,
+      },
+    })),
+  );
 }
 
 /** Test hook. */

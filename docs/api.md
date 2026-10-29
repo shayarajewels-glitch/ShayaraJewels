@@ -112,7 +112,7 @@ A coupon takes its percentage off only the lines whose product type it covers (e
 | GET | `/dashboard` | `DashboardDto` (orders, gross, refunds, net, AOV, 30-day stats, status summary, recent orders, low stock, bestsellers, pending reviews) |
 | GET | `/products` | `?q, type, finish, status, lowStock, sort (updated\|name\|stock\|price)`. Archived products are hidden unless `status=archived` |
 | GET | `/products/:id` | `AdminProductDto` (includes stock, status, file keys) |
-| POST | `/products` | `createProductSchema`: `slug` is optional (generated). Publishing requires at least one image. Media URLs must be site paths or UploadThing hosts; file keys must be tracked uploads |
+| POST | `/products` | `createProductSchema`: `slug` is optional (generated). Publishing requires at least one image. Image URLs may be site paths or any direct `https` link; videos and anything with a file key must be UploadThing uploads (tracked keys) |
 | PATCH | `/products/:id` | Partial `updateProductSchema` (no stock, ratings or sales). Removed media files are deleted from UploadThing |
 | DELETE | `/products/:id` | `{ result: 'archived' }` if the product appears in orders, otherwise `{ result: 'deleted' }` (media removed) |
 | PATCH | `/products/:id/stock` | `{ set }` or `{ adjust, reason? }`. Atomic, never below zero, audited |
@@ -124,11 +124,12 @@ A coupon takes its percentage off only the lines whose product type it covers (e
 | PATCH | `/reviews/:id` | `{ status: 'approved'\|'rejected', moderationNote? }`. Approval re-checks the qualifying order and recomputes ratings |
 | GET | `/coupons` | `{ items: CouponDto[] }` with `usageCount` (orders using the code, excluding cancelled) |
 | GET | `/coupons/:id` | `CouponDto` |
-| POST | `/coupons` | `couponInputSchema`: `{ code, title, description?, discountPercent (1–90), appliesTo (product types; empty = sitewide), image? { url, key?, alt }, active, startsAt?, endsAt?, sortOrder }`. `409 COUPON_CODE_TAKEN` for a duplicate code. Uploaded banners are kept out of the orphan-media cleanup |
+| POST | `/coupons` | `couponInputSchema`: `{ code, title, description?, discountPercent (1–90), appliesTo (product types; empty = sitewide), image? { url (site path, upload or direct https link), key?, alt }, active, startsAt?, endsAt?, sortOrder }`. `409 COUPON_CODE_TAKEN` for a duplicate code. Uploaded banners are kept out of the orphan-media cleanup |
 | PATCH | `/coupons/:id` | Full `couponInputSchema` body. A replaced banner file is deleted from UploadThing |
 | DELETE | `/coupons/:id` | `204`. Past orders keep their discount and code |
 | GET | `/uploads/config` | `{ enabled, maxImageSize, maxVideoSize, maxVideoSeconds }` |
 | POST | `/uploads/token` | `{ token, expiresAt }`: a 10-minute Bearer token for the UploadThing endpoint |
+| POST | `/uploads/confirm` | `{ kind: 'image'\|'video', keys }` → `204`. The admin page calls this after each upload; keys are checked with UploadThing and recorded, so uploads work even if UploadThing's server callback was missed |
 
 ## UploadThing endpoint
 

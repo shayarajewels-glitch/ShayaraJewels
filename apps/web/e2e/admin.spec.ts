@@ -12,7 +12,7 @@ test('admin creates, publishes and previews a product shown in the store', async
   await page.getByLabel('Base material').fill('Brass');
   await page.getByLabel('Price (₹)', { exact: true }).fill('749');
   await page.getByLabel('Opening stock').fill('12');
-  await page.getByLabel('Add image by site path').fill('/images/products/pnd-chan-g-1.svg');
+  await page.getByLabel('Add image by link or site path').fill('/images/products/pnd-chan-g-1.svg');
   await page.getByRole('button', { name: 'Add', exact: true }).click();
   await page.getByLabel('Status').selectOption('published');
   await page.getByRole('button', { name: 'Create product' }).click();

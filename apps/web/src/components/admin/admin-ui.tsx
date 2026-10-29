@@ -110,7 +110,7 @@ export function Pager({ page, totalPages, total, onPage }: { page: number; total
 /** Responsive table wrapper: horizontally scrollable on small screens. */
 export function TableWrap({ children, label }: { children: React.ReactNode; label: string }) {
   return (
-    <div className="overflow-x-auto rounded-md border border-border bg-card" role="region" aria-label={label} tabIndex={0}>
+    <div className="relative overflow-x-auto rounded-md border border-border bg-card" role="region" aria-label={label} tabIndex={0}>
       <table className="w-full min-w-[40rem] text-left text-sm [&_td]:px-4 [&_td]:py-3 [&_th]:px-4 [&_th]:py-3 [&_th]:text-[0.68rem] [&_th]:font-semibold [&_th]:uppercase [&_th]:tracking-[0.14em] [&_th]:text-charcoal-soft [&_thead]:border-b [&_thead]:border-border [&_tbody_tr]:border-b [&_tbody_tr]:border-border last:[&_tbody_tr]:border-0">
         {children}
       </table>

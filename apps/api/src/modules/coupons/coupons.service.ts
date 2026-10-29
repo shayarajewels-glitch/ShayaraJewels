@@ -94,7 +94,7 @@ export async function adminGetCoupon(id: string): Promise<CouponDto> {
 }
 
 function toDoc(input: CouponInput) {
-  if (input.image) assertAllowedMediaUrl(input.image.url, 'image.url');
+  if (input.image) assertAllowedMediaUrl(input.image.url, 'image.url', { anyHost: !input.image.key });
   return {
     ...input,
     image: input.image ? { url: input.image.url, key: input.image.key ?? null, alt: input.image.alt || input.title } : null,

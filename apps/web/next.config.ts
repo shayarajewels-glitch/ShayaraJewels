@@ -26,7 +26,8 @@ const csp = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline' https://checkout.razorpay.com${isDev ? " 'unsafe-eval'" : ''}`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://utfs.io https://*.ufs.sh https://*.razorpay.com",
+  // Any https host: admins may add product or banner images by direct link.
+  "img-src 'self' data: blob: https:",
   "media-src 'self' blob: https://utfs.io https://*.ufs.sh",
   "font-src 'self'",
   `connect-src 'self' ${apiOrigin} https://*.razorpay.com https://*.ingest.uploadthing.com https://*.ufs.sh https://utfs.io https://api.uploadthing.com https://sea1.ingest.uploadthing.com${isDev ? ' ws: http://localhost:*' : ''}`,

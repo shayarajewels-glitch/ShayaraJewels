@@ -91,7 +91,7 @@ The script refuses to run if any admin already exists, and there is no default p
 
 1. Create an app in the UploadThing dashboard.
 2. **API Keys:** copy the v7 **token** into `UPLOADTHING_TOKEN` on the API. Never use a `NEXT_PUBLIC_` variable for it.
-3. UploadThing calls the API at `${API_BASE_URL}/api/uploadthing` when an upload completes, so the API must be publicly reachable in production. In development the SDK's dev mode handles this.
+3. UploadThing calls the API at `${API_BASE_URL}/api/uploadthing` when an upload completes, so set `API_BASE_URL` to the public API URL (e.g. `https://shayarajewels.onrender.com`). If it is wrong the admin page still confirms uploads itself, but the API logs a warning at startup. In development the SDK's dev mode handles this.
 4. Adjust `MEDIA_MAX_IMAGE_SIZE`, `MEDIA_MAX_VIDEO_SIZE` and `MEDIA_MAX_VIDEO_SECONDS` as needed.
 5. Restart the API. In the admin product form the "Upload images" and "Upload video" buttons become active.
 

@@ -12,6 +12,7 @@ import { Checkbox, Field, Input, Label, Textarea } from '@/components/ui/form-co
 import { Card } from '@/components/ui/misc';
 import { ApiError, api, errorMessage } from '@/lib/api-client';
 import { IMAGE_TYPES } from '@/lib/uploadthing';
+import { isImageSource } from '@/lib/utils';
 import { useUploader } from './media-manager';
 
 interface FormState {
@@ -58,6 +59,14 @@ export function CouponForm({ coupon }: { coupon?: CouponDto }) {
     setForm((f) => ({ ...f, image: { url: file.url, key: file.key, alt: f.image?.alt || f.title } }));
     toast.success('Banner uploaded — save the coupon to keep it');
   });
+
+  const [linkInput, setLinkInput] = useState('');
+  const addLink = () => {
+    const url = linkInput.trim();
+    if (!isImageSource(url)) return toast.error('Enter an https image link, or a site path like /images/products/my-banner.jpg');
+    setForm((f) => ({ ...f, image: { url, alt: f.image?.alt || f.title } }));
+    setLinkInput('');
+  };
 
   const toggleType = (t: ProductType) =>
     set('appliesTo', form.appliesTo.includes(t) ? form.appliesTo.filter((x) => x !== t) : [...form.appliesTo, t]);
@@ -179,6 +188,29 @@ export function CouponForm({ coupon }: { coupon?: CouponDto }) {
               <Button type="button" variant="outline" onClick={() => fileInput.current?.click()} loading={uploader.isUploading}>
                 <ImagePlus /> {uploader.isUploading ? `Uploading… ${Math.round(uploader.progress)}%` : 'Upload banner'}
               </Button>
+              <div className="mt-4 flex items-end gap-2">
+                <div className="flex-1">
+                  <Label htmlFor="banner-link" className="text-xs">
+                    Or add by link or site path
+                  </Label>
+                  <Input
+                    id="banner-link"
+                    placeholder="https://example.com/banner.jpg or /images/products/ank-payl-g-2.jpg"
+                    value={linkInput}
+                    onChange={(e) => setLinkInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        addLink();
+                      }
+                    }}
+                    className="h-9"
+                  />
+                </div>
+                <Button type="button" size="sm" variant="outline" onClick={addLink}>
+                  <ImagePlus /> Add
+                </Button>
+              </div>
             </div>
           )}
         </Card>

@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
-import { cn } from '@/lib/utils';
+import { canOptimizeImage, cn } from '@/lib/utils';
 
 export type Slide =
   | { kind: 'coupon'; id: string; code: string; title: string; description: string; percent: number; appliesLabel: string; href: string; image: { url: string; alt: string } | null; endsLabel: string | null }
@@ -60,7 +60,7 @@ function SlideBody({ slide, priority }: { slide: Slide; priority: boolean }) {
   return (
     <>
       {slide.image ? (
-        <Image src={slide.image.url} alt={slide.image.alt} fill priority={priority} sizes="(min-width: 1280px) 1200px, 100vw" className="object-cover" />
+        <Image src={slide.image.url} alt={slide.image.alt} fill priority={priority} unoptimized={!canOptimizeImage(slide.image.url)} sizes="(min-width: 1280px) 1200px, 100vw" className="object-cover" />
       ) : (
         <div aria-hidden className="bg-glow absolute inset-0" />
       )}

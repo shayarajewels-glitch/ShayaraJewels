@@ -68,6 +68,9 @@ export function buildUploadthingRouter(): Router {
     return router;
   }
   getLogger().debug('UploadThing route handler mounted at /api/uploadthing');
+  if (config.isProduction && /\/\/(localhost|127\.0\.0\.1)\b/.test(config.apiBaseUrl)) {
+    getLogger().warn({ apiBaseUrl: config.apiBaseUrl }, 'API_BASE_URL points at localhost: UploadThing callbacks cannot reach this server. Set it to the public API URL.');
+  }
   return createRouteHandler({
     router: buildFileRouter(),
     config: {

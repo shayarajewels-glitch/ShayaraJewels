@@ -51,7 +51,7 @@ Then:
 **Without provider credentials**, the app still runs. The API prints which integrations are disabled:
 
 - **Razorpay not configured:** checkout offers Cash on Delivery only, and online-payment calls return a clear `PAYMENT_NOT_CONFIGURED` error.
-- **UploadThing not configured:** admins can still attach images by site path, such as `/images/products/…`. Upload endpoints return `UPLOADS_NOT_CONFIGURED`.
+- **UploadThing not configured:** admins can still attach images by site path, such as `/images/products/…`, or by a direct `https` image link. Upload endpoints return `UPLOADS_NOT_CONFIGURED`.
 - **Email not configured:** the default is `console` in development and `disabled` in production. Nothing is sent and no tokens are logged in production.
 
 ## Scripts (repo root)
