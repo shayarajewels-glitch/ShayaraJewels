@@ -7,7 +7,7 @@ export const DEFAULT_SLIDES: Slide[] = [
     kind: 'promo',
     id: 'bridal',
     eyebrow: 'The festive edit',
-    title: 'Kundan-style sets for every celebration',
+    title: 'Floral-style sets for every celebration',
     text: 'Chokers, temple coin necklaces, kangan and bridal payals — the look of tradition, made for today.',
     cta: 'Shop necklaces',
     href: '/categories/necklaces',

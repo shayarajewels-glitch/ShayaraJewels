@@ -10,7 +10,7 @@ export default function NewBlogPage() {
       <Link href="/admin/blogs" className="text-xs text-rose-deep hover:underline">
         ← All posts
       </Link>
-      <AdminPageHeader title="New post" description="Add a title, pick where it shows, write the post and add one picture." />
+      <AdminPageHeader title="New post" description="Add a title, an optional category, the post and one picture. It appears on the Blogs page straight away." />
       <BlogForm />
     </div>
   );

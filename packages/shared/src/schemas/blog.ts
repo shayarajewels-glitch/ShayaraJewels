@@ -22,5 +22,5 @@ export type BlogInput = z.output<typeof blogInputSchema>;
 export const blogListQuerySchema = z.object({
   /** A product type, or `general` for posts without one (shown on Shop all). Omit for every post. */
   category: z.union([z.enum(PRODUCT_TYPES), z.literal('general')]).optional(),
-  limit: z.coerce.number().int().min(1).max(24).default(6),
+  limit: z.coerce.number().int().min(1).max(48).default(6),
 });

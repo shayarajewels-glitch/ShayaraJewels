@@ -23,6 +23,7 @@ const help = [
   { href: '/returns-policy', label: 'Returns, refunds & cancellations' },
   { href: '/account/orders', label: 'Track an order' },
   { href: '/contact', label: 'Contact us' },
+  { href: '/blog', label: 'Blogs' },
 ];
 const company = [
   { href: '/about', label: 'About Shayara' },

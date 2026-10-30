@@ -53,8 +53,8 @@ export const serverApi = {
   sitemap: () => getOr<{ items: { slug: string; updatedAt: string }[] }>('/products/sitemap', { items: [] }, 600),
   /** Live coupons for the promo carousel; an outage just shows the default slides. */
   coupons: () => getOr<{ items: PublicCouponDto[] }>('/coupons', { items: [] }, 60),
-  /** Journal posts: a product type, or 'general' for Shop all. An outage just hides the section. */
-  blogs: (category: string, limit = 6) => getOr<{ items: BlogDto[] }>(`/blogs?category=${category}&limit=${limit}`, { items: [] }, 60),
+  /** Every journal post, newest first. An outage just shows an empty journal. */
+  blogs: (limit = 48) => getOr<{ items: BlogDto[] }>(`/blogs?limit=${limit}`, { items: [] }, 60),
   blog: (slug: string) => get<BlogDto>(`/blogs/${encodeURIComponent(slug)}`, 60),
   blogSitemap: () => getOr<{ items: { slug: string; updatedAt: string }[] }>('/blogs/sitemap', { items: [] }, 600),
 };

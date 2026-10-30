@@ -39,8 +39,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function BlogPostPage({ params }: Props) {
   const post = await loadPost((await params).slug);
   const category = blogCategory(post.category);
-  const backHref = category ? `/categories/${category.slug}` : '/shop';
-  const backLabel = category ? category.name : 'Shop';
 
   const structuredData = {
     '@context': 'https://schema.org',
@@ -60,7 +58,7 @@ export default async function BlogPostPage({ params }: Props) {
       <PageHeading
         eyebrow={`${category?.name ?? 'Journal'} · ${formatDate(post.createdAt)}`}
         title={post.title}
-        crumbs={[{ href: '/', label: 'Home' }, { href: backHref, label: backLabel }, { label: post.title }]}
+        crumbs={[{ href: '/', label: 'Home' }, { href: '/blog', label: 'Blogs' }, { label: post.title }]}
       />
       <div className="relative mb-10 aspect-[16/9] overflow-hidden rounded-2xl bg-ivory-deep ring-1 ring-border">
         <ProductImage src={post.image.url} alt={post.image.alt} fill priority sizes="(min-width: 768px) 768px, 100vw" />
@@ -72,9 +70,12 @@ export default async function BlogPostPage({ params }: Props) {
           </p>
         ))}
       </div>
-      <div className="mt-12 border-t border-border pt-8">
-        <Link href={backHref} className="text-sm font-semibold text-rose-deep hover:underline">
-          ← Shop {category ? category.name.toLowerCase() : 'all jewellery'}
+      <div className="mt-12 flex flex-wrap justify-between gap-4 border-t border-border pt-8 text-sm font-semibold text-rose-deep">
+        <Link href="/blog" className="hover:underline">
+          ← All blogs
+        </Link>
+        <Link href={category ? `/categories/${category.slug}` : '/shop'} className="hover:underline">
+          Shop {category ? category.name.toLowerCase() : 'all jewellery'} →
         </Link>
       </div>
     </article>

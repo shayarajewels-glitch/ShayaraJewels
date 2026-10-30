@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { BlogSection } from '@/components/blog/blog-section';
 import { CatalogueListing, hasNonIndexableParams, type RawSearchParams } from '@/components/product/catalogue-listing';
 import { PageHeading } from '@/components/layout/page-heading';
 import { PromoCarousel } from '@/components/promo/promo-carousel';
@@ -23,7 +22,6 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
       <PromoCarousel className="mb-8" />
       <PageHeading eyebrow="The collection" title="Shop all jewellery" crumbs={[{ href: '/', label: 'Home' }, { label: 'Shop' }]} />
       <CatalogueListing basePath="/shop" searchParams={sp} />
-      <BlogSection category="general" />
     </div>
   );
 }

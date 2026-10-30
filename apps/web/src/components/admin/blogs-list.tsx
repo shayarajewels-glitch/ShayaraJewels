@@ -29,7 +29,7 @@ export function BlogsList() {
     <div>
       <AdminPageHeader
         title="Blogs"
-        description="Posts appear after the products: on their category page, or on Shop all when they have no category."
+        description="Every post appears on the Blogs page (footer → Help → Blogs), newest first."
         actions={
           <Button asChild>
             <Link href="/admin/blogs/new">
@@ -51,7 +51,7 @@ export function BlogsList() {
             <tr>
               <th>Picture</th>
               <th>Title</th>
-              <th>Shown on</th>
+              <th>Category</th>
               <th>Published</th>
               <th className="text-right">Actions</th>
             </tr>
@@ -68,7 +68,7 @@ export function BlogsList() {
                     {b.title}
                   </Link>
                 </td>
-                <td className="text-xs">{blogCategory(b.category)?.name ?? 'Shop all'}</td>
+                <td className="text-xs">{blogCategory(b.category)?.name ?? '—'}</td>
                 <td className="text-xs text-charcoal-soft">{formatDate(b.createdAt)}</td>
                 <td>
                   <div className="flex justify-end gap-1">

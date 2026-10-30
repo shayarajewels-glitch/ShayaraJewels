@@ -45,7 +45,7 @@ Base URL: `${API_BASE_URL}/api/v1`. All bodies are JSON. Money is integer **pais
 | Method | Path | Notes |
 | --- | --- | --- |
 | GET | `/products` | Query: `q, type, finish (comma list), minPrice, maxPrice (rupees), inStock, sort (new\|bestsellers\|top-rated\|price-asc\|price-desc), page, limit` |
-| GET | `/products/featured` · `/bestsellers` · `/new-arrivals` · `/top-rated` | `?limit` (max 24) → `{ items, fallback }`. `fallback: true` means featured products were returned for lack of sales or review data |
+| GET | `/products/featured` · `/bestsellers` · `/new-arrivals` · `/top-rated` | `?limit` (max 48) → `{ items, fallback }`. `fallback: true` means featured products were returned for lack of sales or review data |
 | GET | `/products/sitemap` | Published slugs and `updatedAt` |
 | GET | `/products/:slug` | Published products only, else `404` |
 | GET | `/products/:slug/related` | Up to 4 related products |
@@ -92,7 +92,7 @@ A coupon takes its percentage off only the lines whose product type it covers (e
 
 | Method | Path | Notes |
 | --- | --- | --- |
-| GET | `/` | `?category` (a product type, or `general` for posts without one) and `?limit` (max 24) → `{ items: BlogDto[] }`, newest first. Shown after the products on the category page, or on Shop all for `general` |
+| GET | `/` | `?category` (a product type, or `general` for posts without one) and `?limit` (max 48) → `{ items: BlogDto[] }`, newest first. The storefront lists every post on `/blog` (linked from the footer) |
 | GET | `/sitemap` | Post slugs and `updatedAt` |
 | GET | `/:slug` | One post, else `404` |
 

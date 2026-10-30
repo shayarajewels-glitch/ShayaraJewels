@@ -86,10 +86,10 @@ export function BlogForm({ blog }: { blog?: AdminBlogDto }) {
           id="category"
           label="Category"
           error={errors.category}
-          hint="Posts show after the products on their category page. “No category” posts show on Shop all."
+          hint="Optional. Shown as a label on the post and links readers to that category."
         >
           <NativeSelect value={form.category} onChange={(e) => set('category', e.target.value as ProductType | '')}>
-            <option value="">No category (Shop all)</option>
+            <option value="">No category</option>
             {CATEGORIES.map((c) => (
               <option key={c.type} value={c.type}>
                 {c.name}
