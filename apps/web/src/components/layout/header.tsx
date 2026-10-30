@@ -2,8 +2,8 @@
 
 import { Heart, Menu, Search, ShoppingBag, User } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useId, useState } from 'react';
+import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { CATEGORIES } from '@shayara/shared';
 import { Logo } from '@/components/brand/logo';
 import { useHydrated } from '@/hooks/use-hydrated';
@@ -13,44 +13,12 @@ import { useCart } from '@/stores/cart-store';
 import { useSession } from '@/stores/session-store';
 import { useWishlist } from '@/stores/wishlist-store';
 import { CartDrawer } from './cart-drawer';
+import { SearchBox } from './search-box';
 
 const NAV = [
   { href: '/shop', label: 'Shop all' },
   ...CATEGORIES.map((c) => ({ href: `/categories/${c.slug}`, label: c.name })),
 ];
-
-function SearchForm({ onDone, autoFocus }: { onDone?: () => void; autoFocus?: boolean }) {
-  const router = useRouter();
-  const [q, setQ] = useState('');
-  const id = useId();
-  return (
-    <form
-      role="search"
-      onSubmit={(e) => {
-        e.preventDefault();
-        if (!q.trim()) return;
-        router.push(`/search?q=${encodeURIComponent(q.trim())}`);
-        onDone?.();
-      }}
-      className="relative w-full"
-    >
-      <label htmlFor={id} className="sr-only">
-        Search jewellery
-      </label>
-      <input
-        id={id}
-        type="search"
-        value={q}
-        autoFocus={autoFocus}
-        onChange={(e) => setQ(e.target.value)}
-        placeholder="Search rings, pendants, gold tone…"
-        maxLength={80}
-        className="h-11 w-full rounded-full border border-input bg-card pl-11 pr-4 text-sm placeholder:text-charcoal-soft/70 focus-visible:border-rose-deep focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-deep/25"
-      />
-      <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-charcoal-soft" aria-hidden />
-    </form>
-  );
-}
 
 export function Header() {
   const pathname = usePathname();
@@ -89,7 +57,7 @@ export function Header() {
             <SheetContent side="left" title="Menu">
               <nav aria-label="Mobile" className="flex-1 overflow-y-auto px-5 py-4">
                 <div className="mb-5">
-                  <SearchForm onDone={() => setMenuOpen(false)} />
+                  <SearchBox onDone={() => setMenuOpen(false)} />
                 </div>
                 <ul className="space-y-1">
                   {NAV.map((n) => (
@@ -119,7 +87,7 @@ export function Header() {
 
         <div className="hidden justify-center lg:flex">
           <div className="w-full max-w-xl">
-            <SearchForm />
+            <SearchBox />
           </div>
         </div>
 
@@ -169,7 +137,7 @@ export function Header() {
       {searchOpen && (
         <div className="border-t border-border bg-ivory py-3">
           <div className="container-page max-w-2xl">
-            <SearchForm autoFocus onDone={() => setSearchOpen(false)} />
+            <SearchBox autoFocus onDone={() => setSearchOpen(false)} />
           </div>
         </div>
       )}

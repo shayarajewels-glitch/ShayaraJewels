@@ -94,6 +94,13 @@ export interface AdminProductDto extends ProductDetailDto {
   searchKeywords: string[];
 }
 
+/** Type-ahead results for the header search box. */
+export interface SearchSuggestionsDto {
+  /** Search phrases (or a category) that match what was typed. */
+  suggestions: { label: string; href: string }[];
+  products: ProductSummaryDto[];
+}
+
 export interface CategoryDto {
   slug: string;
   type: ProductType;

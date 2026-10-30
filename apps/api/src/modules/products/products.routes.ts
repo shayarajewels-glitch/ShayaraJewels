@@ -9,6 +9,7 @@ import {
   listProducts,
   listPublishedSlugs,
   relatedProducts,
+  searchSuggestions,
   type CollectionName,
 } from './products.service';
 
@@ -59,4 +60,10 @@ export const searchRouter = Router();
 searchRouter.get('/', async (req, res) => {
   const query = parseQuery(req, productQuerySchema.extend({ q: z.string().trim().min(1, 'Enter a search term').max(80) }));
   cachePublic(res, 30).json({ query: query.q, ...(await listProducts(query)) });
+});
+
+/** GET /search/suggest?q= — type-ahead phrases and products for the header search box. */
+searchRouter.get('/suggest', async (req, res) => {
+  const { q } = parseQuery(req, z.object({ q: z.string().trim().min(1).max(80) }));
+  cachePublic(res, 60).json(await searchSuggestions(q));
 });

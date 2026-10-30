@@ -1,5 +1,5 @@
 import type { QueryFilter, SortOrder } from 'mongoose';
-import { CATEGORIES, type CategoryDto, type ProductQuery, type ProductSort } from '@shayara/shared';
+import { CATEGORIES, FINISH_LABELS, type CategoryDto, type ProductQuery, type ProductSort, type SearchSuggestionsDto } from '@shayara/shared';
 import { ProductModel, type Product } from '../../models';
 import { notFound } from '../../utils/errors';
 import { escapeRegex, paginate } from '../../utils/http';
@@ -61,6 +61,69 @@ export async function listProducts(query: ProductQuery) {
     result = await run(filter);
   }
   return paginate(result.docs.map(toProductSummary), result.total, query.page, query.limit);
+}
+
+const SUGGESTION_TTL_MS = 5 * 60 * 1000;
+let vocabulary: { builtAt: number; phrases: Map<string, string> } | null = null;
+
+/**
+ * Lower-case search phrases mapped to where they lead: category names go to
+ * the category page, everything else (types, finish + type, keywords, product
+ * names) to the search page. Rebuilt from the published catalogue every few minutes.
+ */
+async function suggestionVocabulary(): Promise<Map<string, string>> {
+  if (vocabulary && Date.now() - vocabulary.builtAt < SUGGESTION_TTL_MS) return vocabulary.phrases;
+  const docs = await ProductModel.find(PUBLISHED).select('name type finish searchKeywords').lean<Product[]>();
+  const phrases = new Map<string, string>();
+  const add = (phrase: string, href?: string) => {
+    const label = phrase.trim().toLowerCase().replace(/\s+/g, ' ');
+    if (label.length >= 2 && !phrases.has(label)) phrases.set(label, href ?? `/search?q=${encodeURIComponent(label)}`);
+  };
+  for (const c of CATEGORIES) {
+    if (docs.some((d) => d.type === c.type)) add(c.name, `/categories/${c.slug}`);
+  }
+  for (const d of docs) {
+    add(d.type);
+    add(`${FINISH_LABELS[d.finish]} ${d.type}`);
+  }
+  for (const d of docs) d.searchKeywords.forEach((k) => add(k));
+  for (const d of docs) add(d.name);
+  vocabulary = { builtAt: Date.now(), phrases };
+  return phrases;
+}
+
+/** Type-ahead for the search box: matching phrases plus the best-selling matching products. */
+export async function searchSuggestions(q: string): Promise<SearchSuggestionsDto> {
+  const query = q.trim().toLowerCase().replace(/\s+/g, ' ');
+  const terms = query.split(' ').filter(Boolean).slice(0, 6);
+  // Every typed word must start a word in the phrase: "gold pen" matches "gold tone pendant".
+  const termPatterns = terms.map((t) => new RegExp(`(^|[\\s-])${escapeRegex(t)}`, 'i'));
+
+  const suggestions = [...(await suggestionVocabulary())]
+    .filter(([label]) => termPatterns.every((re) => re.test(label)))
+    .sort(([a], [b]) => Number(!a.startsWith(query)) - Number(!b.startsWith(query)) || a.length - b.length)
+    .slice(0, 6)
+    .map(([label, href]) => ({ label, href }));
+
+  const fields = ['name', 'searchKeywords', 'type', 'finish'] as const;
+  let docs = await ProductModel.find({
+    ...PUBLISHED,
+    $and: terms.map((t) => {
+      const re = new RegExp(`\\b${escapeRegex(t)}`, 'i');
+      return { $or: fields.map((f) => ({ [f]: re })) };
+    }),
+  })
+    .sort({ unitsSold: -1, ratingScore: -1, createdAt: -1 })
+    .limit(5)
+    .lean<Product[]>();
+  // Words that only appear in descriptions ("tone", "festive") fall back to the text index.
+  if (docs.length === 0) {
+    docs = await ProductModel.find({ ...PUBLISHED, $text: { $search: query } })
+      .sort({ score: { $meta: 'textScore' } })
+      .limit(5)
+      .lean<Product[]>();
+  }
+  return { suggestions, products: docs.map(toProductSummary) };
 }
 
 export async function getPublishedProductBySlug(slug: string) {

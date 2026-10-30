@@ -53,6 +53,7 @@ Base URL: `${API_BASE_URL}/api/v1`. All bodies are JSON. Money is integer **pais
 | POST | `/products/:productId/reviews` | user. `{ rating 1–5, title, comment }`. `403 NOT_VERIFIED_PURCHASE` unless the user received the product in a delivered order; `409` if already reviewed. Created as `pending` |
 | GET | `/categories` | Categories with published product counts |
 | GET | `/search` | Same query as `/products`; `q` required |
+| GET | `/search/suggest` | `?q` (1–80 chars) → `{ suggestions: [{ label, href }], products }`: up to 6 phrases (categories, types, finish + type, keywords, product names; every typed word must start a word) and 5 best-selling matching products, for the header type-ahead |
 
 ## Reviews `/reviews` (user)
 
