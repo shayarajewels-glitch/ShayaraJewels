@@ -41,7 +41,7 @@ function SlideBody({ slide, priority }: { slide: Slide; priority: boolean }) {
   if (slide.kind === 'promo') {
     return (
       <>
-        <Image src={slide.image} alt={slide.imageAlt} fill priority={priority} sizes="(min-width: 1280px) 1200px, 100vw" className="object-cover" />
+        <Image src={slide.image} alt={slide.imageAlt} fill priority={priority} sizes="(min-width: 1280px) 1200px, 100vw" className="object-cover object-right" />
         <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/55 to-transparent" />
         <div className="relative flex h-full max-w-lg flex-col justify-center gap-3 p-6 sm:p-10 md:p-14">
           <p className="eyebrow text-champagne">{slide.eyebrow}</p>

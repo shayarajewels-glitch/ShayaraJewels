@@ -11,8 +11,8 @@ export const DEFAULT_SLIDES: Slide[] = [
     text: 'Chokers, temple coin necklaces, kangan and bridal payals — the look of tradition, made for today.',
     cta: 'Shop necklaces',
     href: '/categories/necklaces',
-    image: '/images/products/nck-rajw-g-2.jpg',
-    imageAlt: 'Gold-tone bridal necklace with pearl drops on red velvet',
+    image: '/images/banners/festive-edit.jpg',
+    imageAlt: 'Woman in an embellished outfit wearing a matching necklace, earrings, bracelet and rings',
   },
   {
     kind: 'promo',
@@ -22,8 +22,8 @@ export const DEFAULT_SLIDES: Slide[] = [
     text: 'Hearts, evil eyes, charms and stackable rings — thoughtful gifts at every price.',
     cta: 'Shop gifts',
     href: '/shop?maxPrice=999',
-    image: '/images/products/pnd-dil-g-2.jpg',
-    imageAlt: 'Gold-tone heart pendant on a fine chain',
+    image: '/images/banners/gifting-edit.jpg',
+    imageAlt: 'Rose-gold-tone necklace, earrings, bangle and rings displayed on stone blocks',
   },
   {
     kind: 'promo',
@@ -33,8 +33,8 @@ export const DEFAULT_SLIDES: Slide[] = [
     text: 'Layering chains, dainty anklets and new-season rings in gold, silver and rose gold tones.',
     cta: 'See new arrivals',
     href: '/shop?sort=new',
-    image: '/images/products/nck-aria-g-1.jpg',
-    imageAlt: 'Two fine gold-tone chains on ivory fabric',
+    image: '/images/banners/new-arrivals.jpg',
+    imageAlt: 'Woman smiling, wearing a delicate necklace, drop earrings and a bracelet',
   },
 ];
 

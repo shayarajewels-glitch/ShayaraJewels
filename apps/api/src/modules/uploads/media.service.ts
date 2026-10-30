@@ -2,7 +2,7 @@ import type { Types } from 'mongoose';
 import { UTApi } from 'uploadthing/server';
 import { getConfig } from '../../config/env';
 import { getLogger } from '../../config/logger';
-import { CategoryImageModel, CouponModel, MediaAssetModel, ProductModel } from '../../models';
+import { BlogModel, CategoryImageModel, CouponModel, MediaAssetModel, ProductModel } from '../../models';
 import { badRequest } from '../../utils/errors';
 
 /** Hosts that serve UploadThing files. Videos (and any file with a key) must come from these. */
@@ -117,7 +117,7 @@ export function setUtApi(next: UTApi | null | undefined): void {
 }
 
 /**
- * Deletes files from UploadThing unless a product, a coupon banner or a category picture
+ * Deletes files from UploadThing unless a product, coupon banner, category picture or blog post
  * still references them. Failures are logged and retried by the orphan-media cleanup job.
  */
 export async function releaseMedia(keys: string[], exceptProductId?: Types.ObjectId): Promise<void> {
@@ -130,10 +130,12 @@ export async function releaseMedia(keys: string[], exceptProductId?: Types.Objec
     .lean();
   const bannerUsers = await CouponModel.find({ 'image.key': { $in: keys } }).select('image.key').lean();
   const categoryUsers = await CategoryImageModel.find({ key: { $in: keys } }).select('key').lean();
+  const blogUsers = await BlogModel.find({ 'image.key': { $in: keys } }).select('image.key').lean();
   const used = new Set([
     ...stillUsed.flatMap((p) => collectKeys(p as unknown as MediaRefs)),
     ...bannerUsers.map((c) => c.image!.key!),
     ...categoryUsers.map((c) => c.key!),
+    ...blogUsers.map((b) => b.image.key!),
   ]);
   const deletable = keys.filter((k) => !used.has(k));
   if (deletable.length === 0) return;

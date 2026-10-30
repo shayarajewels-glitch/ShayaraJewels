@@ -7,6 +7,7 @@ import {
   adminRefundSchema,
   adminReviewModerationSchema,
   adminReviewQuerySchema,
+  blogInputSchema,
   categoryImageInputSchema,
   couponInputSchema,
   couponUpdateSchema,
@@ -18,6 +19,7 @@ import {
 } from '@shayara/shared';
 import { currentUser, requireAdmin } from '../../middleware/security';
 import { parseBody, parseParams, parseQuery } from '../../utils/http';
+import { adminCreateBlog, adminDeleteBlog, adminGetBlog, adminListBlogs, adminUpdateBlog } from '../blogs/blogs.service';
 import { adminListCategoryImages, adminSetCategoryImage } from '../categories/category-images.service';
 import { adminCreateCoupon, adminDeleteCoupon, adminGetCoupon, adminListCoupons, adminUpdateCoupon } from '../coupons/coupons.service';
 import { adminListReviews, moderateReview } from '../reviews/reviews.service';
@@ -111,6 +113,25 @@ adminRouter.patch('/coupons/:id', async (req, res) => {
 });
 adminRouter.delete('/coupons/:id', async (req, res) => {
   await adminDeleteCoupon(parseParams(req, idParams).id);
+  res.status(204).end();
+});
+
+/* Blogs */
+adminRouter.get('/blogs', async (_req, res) => {
+  res.json({ items: await adminListBlogs() });
+});
+adminRouter.get('/blogs/:id', async (req, res) => {
+  res.json(await adminGetBlog(parseParams(req, idParams).id));
+});
+adminRouter.post('/blogs', async (req, res) => {
+  res.status(201).json(await adminCreateBlog(parseBody(req, blogInputSchema)));
+});
+adminRouter.patch('/blogs/:id', async (req, res) => {
+  const { id } = parseParams(req, idParams);
+  res.json(await adminUpdateBlog(id, parseBody(req, blogInputSchema)));
+});
+adminRouter.delete('/blogs/:id', async (req, res) => {
+  await adminDeleteBlog(parseParams(req, idParams).id);
   res.status(204).end();
 });
 

@@ -3,6 +3,7 @@ import type { RateLimiters } from './middleware/rate-limit';
 import { adminRouter } from './modules/admin/admin.routes';
 import { buildAuthRouter } from './modules/auth/auth.routes';
 import { cartRouter } from './modules/cart/cart.routes';
+import { blogsRouter } from './modules/blogs/blogs.routes';
 import { couponsRouter } from './modules/coupons/coupons.routes';
 import { buildCheckoutRouter } from './modules/checkout/checkout.routes';
 import { ordersRouter } from './modules/orders/orders.routes';
@@ -22,6 +23,7 @@ export function buildApiRouter(limiters: RateLimiters): Router {
   api.use('/search', searchRouter);
   api.use('/cart', cartRouter);
   api.use('/coupons', couponsRouter);
+  api.use('/blogs', blogsRouter);
   api.use('/checkout', buildCheckoutRouter(limiters));
   api.use('/orders', ordersRouter);
   api.use('/payments', paymentsRouter);

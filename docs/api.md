@@ -88,6 +88,14 @@ A coupon takes its percentage off only the lines whose product type it covers (e
 | --- | --- | --- |
 | GET | `/` | Live coupons (active and inside their dates) for the storefront carousel: `{ items: PublicCouponDto[] }` |
 
+## Blogs `/blogs` (public)
+
+| Method | Path | Notes |
+| --- | --- | --- |
+| GET | `/` | `?category` (a product type, or `general` for posts without one) and `?limit` (max 24) → `{ items: BlogDto[] }`, newest first. Shown after the products on the category page, or on Shop all for `general` |
+| GET | `/sitemap` | Post slugs and `updatedAt` |
+| GET | `/:slug` | One post, else `404` |
+
 ## Orders `/orders` (user; only the user's own orders, others return `404`)
 
 | Method | Path | Notes |
@@ -128,6 +136,11 @@ A coupon takes its percentage off only the lines whose product type it covers (e
 | POST | `/coupons` | `couponInputSchema`: `{ code, title, description?, discountPercent (1–90), appliesTo (product types; empty = sitewide), image? { url (site path, upload or direct https link), key?, alt }, active, startsAt?, endsAt?, sortOrder }`. `409 COUPON_CODE_TAKEN` for a duplicate code. Uploaded banners are kept out of the orphan-media cleanup |
 | PATCH | `/coupons/:id` | Full `couponInputSchema` body. A replaced banner file is deleted from UploadThing |
 | DELETE | `/coupons/:id` | `204`. Past orders keep their discount and code |
+| GET | `/blogs` | `{ items: AdminBlogDto[] }`, newest first |
+| GET | `/blogs/:id` | `AdminBlogDto` |
+| POST | `/blogs` | `blogInputSchema`: `{ title, category (product type or null), content (plain text, blank line between paragraphs), image { url, key?, alt } }`. The slug is generated from the title and kept on later edits |
+| PATCH | `/blogs/:id` | Full `blogInputSchema` body. A replaced uploaded picture is deleted from UploadThing |
+| DELETE | `/blogs/:id` | `204` |
 | GET | `/category-images` | `{ items: AdminCategoryImageDto[] }`: every category with its custom tile picture (or `null`) |
 | PATCH | `/category-images/:type` | `{ image: { url, key?, alt } \| null }` → updated list. `url` may be an upload, a site path or a direct `https` link; `null` restores the built-in photo. A replaced uploaded file is deleted from UploadThing |
 | GET | `/uploads/config` | `{ enabled, maxImageSize, maxVideoSize, maxVideoSeconds }` |

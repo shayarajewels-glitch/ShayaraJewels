@@ -320,3 +320,19 @@ export interface DashboardDto {
   bestsellers: { id: string; name: string; slug: string; unitsSold: number }[];
   pendingReviews: number;
 }
+
+export interface BlogDto {
+  id: string;
+  slug: string;
+  title: string;
+  /** Null means a general post, shown on Shop all. */
+  category: ProductType | null;
+  content: string;
+  image: { url: string; alt: string };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AdminBlogDto extends Omit<BlogDto, 'image'> {
+  image: { url: string; key: string | null; alt: string };
+}

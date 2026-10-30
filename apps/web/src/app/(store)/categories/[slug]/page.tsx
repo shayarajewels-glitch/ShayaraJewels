@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { CATEGORIES, categoryBySlug } from '@shayara/shared';
+import { BlogSection } from '@/components/blog/blog-section';
 import { CatalogueListing, hasNonIndexableParams, type RawSearchParams } from '@/components/product/catalogue-listing';
 import { PageHeading } from '@/components/layout/page-heading';
 import { PromoCarousel } from '@/components/promo/promo-carousel';
@@ -45,6 +46,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
         crumbs={[{ href: '/', label: 'Home' }, { href: '/shop', label: 'Shop' }, { label: category.name }]}
       />
       <CatalogueListing basePath={`/categories/${slug}`} searchParams={sp} fixedType={category.type} />
+      <BlogSection category={category.type} />
       {firstPage && (
         <section aria-labelledby="category-guide" className="mt-20 grid gap-10 border-t border-border pt-14 lg:grid-cols-2">
           <div className="prose-shayara">

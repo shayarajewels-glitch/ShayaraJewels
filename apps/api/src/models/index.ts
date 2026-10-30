@@ -12,3 +12,4 @@ export * from './media-asset.model';
 export * from './inventory-adjustment.model';
 export * from './coupon.model';
 export * from './category-image.model';
+export * from './blog.model';
