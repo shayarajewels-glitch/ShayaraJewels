@@ -51,7 +51,7 @@ Base URL: `${API_BASE_URL}/api/v1`. All bodies are JSON. Money is integer **pais
 | GET | `/products/:slug/related` | Up to 4 related products |
 | GET | `/products/:productId/reviews` | Approved reviews, `?sort=recent\|highest\|lowest`, plus `distribution` |
 | POST | `/products/:productId/reviews` | user. `{ rating 1–5, title, comment }`. `403 NOT_VERIFIED_PURCHASE` unless the user received the product in a delivered order; `409` if already reviewed. Created as `pending` |
-| GET | `/categories` | Categories with published product counts |
+| GET | `/categories` | Categories with published product counts and `image` (the tile picture set in admin, or `null` for the built-in photo) |
 | GET | `/search` | Same query as `/products`; `q` required |
 | GET | `/search/suggest` | `?q` (1–80 chars) → `{ suggestions: [{ label, href }], products }`: up to 6 phrases (categories, types, finish + type, keywords, product names; every typed word must start a word) and 5 best-selling matching products, for the header type-ahead |
 
@@ -128,6 +128,8 @@ A coupon takes its percentage off only the lines whose product type it covers (e
 | POST | `/coupons` | `couponInputSchema`: `{ code, title, description?, discountPercent (1–90), appliesTo (product types; empty = sitewide), image? { url (site path, upload or direct https link), key?, alt }, active, startsAt?, endsAt?, sortOrder }`. `409 COUPON_CODE_TAKEN` for a duplicate code. Uploaded banners are kept out of the orphan-media cleanup |
 | PATCH | `/coupons/:id` | Full `couponInputSchema` body. A replaced banner file is deleted from UploadThing |
 | DELETE | `/coupons/:id` | `204`. Past orders keep their discount and code |
+| GET | `/category-images` | `{ items: AdminCategoryImageDto[] }`: every category with its custom tile picture (or `null`) |
+| PATCH | `/category-images/:type` | `{ image: { url, key?, alt } \| null }` → updated list. `url` may be an upload, a site path or a direct `https` link; `null` restores the built-in photo. A replaced uploaded file is deleted from UploadThing |
 | GET | `/uploads/config` | `{ enabled, maxImageSize, maxVideoSize, maxVideoSeconds }` |
 | POST | `/uploads/token` | `{ token, expiresAt }`: a 10-minute Bearer token for the UploadThing endpoint |
 | POST | `/uploads/confirm` | `{ kind: 'image'\|'video', keys }` → `204`. The admin page calls this after each upload; keys are checked with UploadThing and recorded, so uploads work even if UploadThing's server callback was missed |

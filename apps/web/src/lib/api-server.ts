@@ -49,7 +49,7 @@ export const serverApi = {
     }),
   collection: (name: 'featured' | 'bestsellers' | 'new-arrivals' | 'top-rated', limit = 8) =>
     getOr<Collection>(`/products/${name}?limit=${limit}`, { items: [], fallback: true }),
-  categories: () => getOr<{ items: CategoryDto[] }>('/categories', { items: [] }, 300),
+  categories: () => getOr<{ items: CategoryDto[] }>('/categories', { items: [] }, 60),
   sitemap: () => getOr<{ items: { slug: string; updatedAt: string }[] }>('/products/sitemap', { items: [] }, 600),
   /** Live coupons for the promo carousel; an outage just shows the default slides. */
   coupons: () => getOr<{ items: PublicCouponDto[] }>('/coupons', { items: [] }, 60),

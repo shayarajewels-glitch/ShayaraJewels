@@ -8,18 +8,10 @@ import { ProductRail } from '@/components/product/product-rail';
 import { PromoCarousel } from '@/components/promo/promo-carousel';
 import { Button } from '@/components/ui/button';
 import { serverApi } from '@/lib/api-server';
+import { CATEGORY_TILES } from '@/lib/category-tiles';
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, SOCIAL_LINKS, STORE_ADDRESS, SUPPORT_EMAIL, SUPPORT_PHONE } from '@/lib/config';
 
 export const revalidate = 300;
-
-/** Category tiles reuse the first image of a product in each category, on a tint of their own. */
-const CATEGORY_TILES: Record<string, { image: string; tint: string }> = {
-  bracelets: { image: '/images/products/brc-kavy-g-1.jpg', tint: 'from-champagne-soft to-ivory-deep' },
-  rings: { image: '/images/products/rng-noor-rg-1.jpg', tint: 'from-rose-soft to-ivory-deep' },
-  necklaces: { image: '/images/products/nck-aria-g-2.jpg', tint: 'from-sand to-ivory-deep' },
-  pendants: { image: '/images/products/pnd-chan-g-1.jpg', tint: 'from-champagne-soft to-rose-soft' },
-  anklets: { image: '/images/products/ank-payl-s-1.jpg', tint: 'from-sand to-ivory-deep' },
-};
 
 const FINISH_TILES = [
   { finish: 'gold', name: 'Gold tone', note: 'Warm, classic, festive', image: '/images/products/rng-mira-g-1.jpg', swatch: 'from-[#f7e9c4] via-[#e3c37f] to-[#c79a45]' },
@@ -40,11 +32,14 @@ const CARE_TIPS = [
 ];
 
 export default async function HomePage() {
-  const [featured, newArrivals, bestsellers] = await Promise.all([
+  const [featured, newArrivals, bestsellers, categories] = await Promise.all([
     serverApi.collection('featured', 4),
     serverApi.collection('new-arrivals', 4),
     serverApi.collection('bestsellers', 4),
+    serverApi.categories(),
   ]);
+  // Pictures chosen in admin replace the built-in tile photos.
+  const tileImages = new Map(categories.items.map((c) => [c.slug, c.image]));
   const spotlight = featured.items[0];
 
   const storeJsonLd = {
@@ -207,11 +202,12 @@ export default async function HomePage() {
           <ul className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 md:grid-cols-5">
             {CATEGORIES.map((c) => {
               const tile = CATEGORY_TILES[c.slug]!;
+              const custom = tileImages.get(c.slug);
               return (
                 <li key={c.slug}>
                   <Link href={`/categories/${c.slug}`} className="group block text-center">
                     <div className={`arch relative aspect-[3/4] overflow-hidden bg-gradient-to-b ${tile.tint} ring-1 ring-card transition-shadow duration-500 group-hover:shadow-[0_24px_40px_-24px_rgba(212,175,55,0.22)]`}>
-                      <ProductImage src={tile.image} alt="" fill sizes="(min-width: 768px) 18vw, 45vw" className="transition-transform duration-700 group-hover:scale-110" />
+                      <ProductImage src={custom?.url ?? tile.image} alt="" fill sizes="(min-width: 768px) 18vw, 45vw" className="transition-transform duration-700 group-hover:scale-110" />
                     </div>
                     <p className="mt-4 font-display text-2xl group-hover:text-rose-deep">{c.name}</p>
                     <p className="mt-0.5 text-xs text-charcoal-soft">{c.tagline}</p>

@@ -108,6 +108,17 @@ export interface CategoryDto {
   tagline: string;
   description: string;
   productCount: number;
+  /** Custom tile picture set in admin; null means the storefront's built-in photo. */
+  image: { url: string; alt: string } | null;
+}
+
+/** A category with its custom tile picture, for the admin editor. */
+export interface AdminCategoryImageDto {
+  type: ProductType;
+  slug: string;
+  name: string;
+  image: { url: string; key: string | null; alt: string } | null;
+  updatedAt: string | null;
 }
 
 export interface CartLineDto {

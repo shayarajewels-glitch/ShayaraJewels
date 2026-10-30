@@ -1,6 +1,7 @@
 import type { QueryFilter, SortOrder } from 'mongoose';
 import { CATEGORIES, FINISH_LABELS, type CategoryDto, type ProductQuery, type ProductSort, type SearchSuggestionsDto } from '@shayara/shared';
 import { ProductModel, type Product } from '../../models';
+import { categoryImagesByType } from '../categories/category-images.service';
 import { notFound } from '../../utils/errors';
 import { escapeRegex, paginate } from '../../utils/http';
 import { toProductDetail, toProductSummary } from './product.mappers';
@@ -198,7 +199,8 @@ export async function listCategories(): Promise<CategoryDto[]> {
     { $group: { _id: '$type', count: { $sum: 1 } } },
   ]);
   const byType = new Map(counts.map((c) => [c._id, c.count]));
-  return CATEGORIES.map((c) => ({ ...c, productCount: byType.get(c.type) ?? 0 }));
+  const images = await categoryImagesByType();
+  return CATEGORIES.map((c) => ({ ...c, productCount: byType.get(c.type) ?? 0, image: images.get(c.type) ?? null }));
 }
 
 /** Slugs and timestamps for the sitemap. Published products only. */

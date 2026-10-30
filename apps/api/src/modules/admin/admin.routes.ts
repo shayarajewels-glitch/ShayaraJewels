@@ -7,15 +7,18 @@ import {
   adminRefundSchema,
   adminReviewModerationSchema,
   adminReviewQuerySchema,
+  categoryImageInputSchema,
   couponInputSchema,
   couponUpdateSchema,
   createProductSchema,
   objectIdSchema,
+  PRODUCT_TYPES,
   stockUpdateSchema,
   updateProductSchema,
 } from '@shayara/shared';
 import { currentUser, requireAdmin } from '../../middleware/security';
 import { parseBody, parseParams, parseQuery } from '../../utils/http';
+import { adminListCategoryImages, adminSetCategoryImage } from '../categories/category-images.service';
 import { adminCreateCoupon, adminDeleteCoupon, adminGetCoupon, adminListCoupons, adminUpdateCoupon } from '../coupons/coupons.service';
 import { adminListReviews, moderateReview } from '../reviews/reviews.service';
 import { adminUploadsRouter } from '../uploads/uploads.routes';
@@ -109,6 +112,15 @@ adminRouter.patch('/coupons/:id', async (req, res) => {
 adminRouter.delete('/coupons/:id', async (req, res) => {
   await adminDeleteCoupon(parseParams(req, idParams).id);
   res.status(204).end();
+});
+
+/* Category pictures */
+adminRouter.get('/category-images', async (_req, res) => {
+  res.json({ items: await adminListCategoryImages() });
+});
+adminRouter.patch('/category-images/:type', async (req, res) => {
+  const { type } = parseParams(req, z.object({ type: z.enum(PRODUCT_TYPES) }));
+  res.json({ items: await adminSetCategoryImage(type, parseBody(req, categoryImageInputSchema)) });
 });
 
 /* Uploads */
